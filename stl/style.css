@@ -1,0 +1,52 @@
+body {
+  background: black;
+  color: white;
+  font: normal 1em "Source Code Pro", "Open Sans", "Roboto", Verdana, Arial, sans-serif;
+}
+
+div {
+ vertical-align: top;
+ display: inline-block;
+ margin: 0;
+ padding: .5em;
+}
+
+a {
+  color: inherit;
+}
+
+span {
+  display: inline-block;
+  margin: 0 0 .6em 0;
+  border: 1px dotted currentColor;
+}
+
+span.leko {
+  vertical-align: top;
+  display: inline-block;
+  padding: 0 .1em;
+  text-align: center;
+  margin: 0;
+}
+
+.vertical {
+  width: 1em;
+}
+
+.leko-char {
+  margin: 0;
+  top: 0em;
+  left: 0em;
+  position: relative;
+  width: .8em;
+  height: .8em;
+}
+
+.telo {
+  font-size: 1.25em;
+  vertical-align: top;
+  font-family: "Sitelen Telo";
+  display: inline-block;
+  text-align: center;
+  margin: 0;
+}

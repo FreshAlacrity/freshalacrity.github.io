@@ -1,0 +1,48 @@
+body {
+   width: 99%;
+   height: 100%;
+   font-family: "Source Code Pro", Helvetica, sans-serif;
+}
+body, textarea {
+   color: white;
+   background: #121212;
+}
+#container {
+   margin: 5%;
+}
+div {
+   background: hsla(0, 0%, 0%, 20%);
+   display: inline-block;
+   vertical-align: top;
+   margin: 5px;
+}
+label {
+   padding-left: .5em;
+}
+input {
+ height: 1.2em;
+ width: 30%;
+}
+textarea {
+   line-height: 1.3em;
+}
+button {
+
+}
+button.small {
+   font-size: .6em;
+   vertical-align: top;
+}
+.code {
+   style="font-size:.7em;
+   font-family:monospace;
+   width:98%;
+}
+#preview {
+   font-size: 11em;
+   height: 1em;
+}
+svg {
+   border: 1px solid white;
+   height: 1em;
+}

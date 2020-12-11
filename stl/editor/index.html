@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+<meta charset="UTF-8">
+<title>Sitelen Telo Leko Editor</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Code+Pro">
+<link id="page_style" rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div>
+<div>
+  <div id="preview"></div>
+  <div id="data">
+    <input type="text" id="fname" name="fname" value="telo"><button onclick='getSaved()' title="load character from word">Get</button><button onclick='saveAs()' title="save to local storage">Save</button> <button onclick='getSaved(-1)' style="float:right;" title="move to the previous character">Previous</button><button onclick='getSaved(1)' style="float:right;" title="move to the next character">Next</button><br><br>
+  <label for="pretty-points">Simple Points:</label><span id="pretty-error-msg" style="color:red;"></span><br>
+  <div id="sort-order-buttons" style="margin:0;padding:0;"><button>V</button><br><button>V</button><br><button>V</button><br><button>V</button></div>
+    <textarea id="pretty-points" name="pretty-array-of-points" rows="5" cols="34" onkeyup='updateFromPretty("pretty-points")'>
+  array here</textarea><br>
+    <label for="arrays-of-points">Array Data:</label><span id="array-error-msg" style="color:red;"></span><br>
+      <textarea id="arrays-of-points" class="code" name="arrays-of-points" onkeyup='updateFromJSON("arrays-of-points")'>
+  array here</textarea>
+  </div>
+</div>
+<br>
+<div style="width: 35.8em;padding-top:5px;">
+  <label>Dictionary Preview:</label>
+  <!--<select name="styles" id="styles" onchange="selectStyle()">
+  <option value="show-line-details">Show Line Details</option>
+  <option value="pixel-blocks">Pixel Blocks</option>
+  <option value="thin-lines">Thin Lines</option>
+  <option value="thick-lines">Thick Lines</option>
+  <option value="neon">Neon</option>
+  <option value="constellation">Constellation</option>
+  </select>-->
+  <button class="small" onclick='resizeDict(.2)'>+</button><button class="small" onclick='resizeDict(-.2)'>-</button>
+  <div id="dictionary-print" style="font-size:1.5em;"> </div>
+  <textarea id="dictionary-code" class="code"></textarea>
+</div>
+</div>
+
+<script src="./myScript.js"></script>
+
+</body>
+</html>

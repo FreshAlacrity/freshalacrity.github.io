@@ -30,7 +30,6 @@
          local-history (:star:)
          sync-settings
             use CTRL + SHIFT + P and search backup to get commands
-            token ||3fcf12bf2ad0afa183a81e85612617a895ba50bb||
       Settings:
          - title bar hidden
          - show invisibles
@@ -42,6 +41,7 @@
       Hard Refresh
          Windows + Chrome: hold down Ctrl and then press F5 on your keyboard
    [Linux Mint](https://linuxmint.com/)
+   [Gravit Designer](https://designer.gravit.io/)
 
 ## Syntax and Style
    ### Overall Style Goals
@@ -109,6 +109,18 @@
              }
              ...
              ```
+      DO NOT DO doWeDoIt = doWeDoIt || true
+         this will always return true if doWeDoIt is a bool
+         If the first value is falsey, it returns the second value.
+         If the first value is truthy, it returns the first value.
+         instead do this:
+            `flagA = typeof flagA !== "undefined" ? flagA : true;`
+         or this (ES6):
+            ```
+            function multiply(a, b = 1) {
+               return a * b;
+            }
+            ```
    ### Functions
       Favor named functions and avoid anonymous ones for anything more than one line.[^2]
          Benefits:
@@ -334,7 +346,7 @@
    [What can we do with ES6 Generator that we cannot with for loop?](https://stackoverflow.com/questions/23613612/what-can-we-do-with-es6-generator-that-we-cannot-with-for-loop?rq=1)
    [Graceful degradation versus progressive enhancement - W3C](https://www.w3.org/wiki/Graceful_degradation_versus_progressive_enhancement)
 
-## TO SORT
+## TO SORT...
 
 this:
   In a method, this refers to the owner object.
