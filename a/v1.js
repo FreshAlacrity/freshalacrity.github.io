@@ -1,14 +1,30 @@
+/*jshint esversion: 6 */
+
+alacrity = function(){
+   var current = null;
+   function init(){ return "init"; }
+   function change(){ return "change"; }
+   function verify(){ return "verify"; }
+   function printMe(x){ return JSON.stringify(x, null, 2); }
+   return {
+     init:init,
+     set:change,
+     print:printMe,
+   };
+ }();
+
+ console.log(alacrity.set());
+
 /* GENERAL */
-{
    /* modifications */
-   function getFancyString(obj, nameStr) {
-   let beginStr = "";
-   if (nameStr != undefined){
+  function getFancyString(obj, nameStr) {
+    let beginStr = "";
+    if (nameStr != undefined){
       beginStr = "var " + nameStr + " = ";
-   }
-   return beginStr + JSON.stringify(obj, null, 2);
-   }
-   function fix(input,maxN) {
+    }
+    return beginStr + JSON.stringify(obj, null, 2);
+  }
+  function fix(input,maxN) {
     /* wraps numbers around a range */
     let result = input+0; //make sure it's a number?
     while(result < 0){
@@ -18,8 +34,8 @@
       result -= maxN;
     }
     return result;
-   }
-   function smooshObjects(mainObject, overrideObject) {
+  }
+  function smooshObjects(mainObject, overrideObject) {
     // overrides the properties of one object with any properties that exist on another
     // not super deep, not super shallow
     let tempJSON = JSON.stringify(mainObject);
@@ -28,40 +44,38 @@
       newObject[key] = overrideObject[key];
     }
     return newObject;
-   }
-   function editValueAt(position, stringOrArray, newChar) {
-    if (position >= stringOrArray.length) { alert("the position specified is past the end of the string") }
+  }
+  function editValueAt(position, stringOrArray, newChar) {
+    if (position >= stringOrArray.length) { alert("the position specified is past the end of the string"); }
     if (newChar == undefined){
       return stringOrArray.slice(0, position).concat(stringOrArray.slice(position+1, stringOrArray.length));
     } else {
       return stringOrArray.slice(0, position).concat(newChar).concat(stringOrArray.slice(position+1, stringOrArray.length));
     }
-   }
-   function spliceIntoString(str, index, value) {
+  }
+  function spliceIntoString(str, index, value) {
     return str.slice(0, index) + value + str.slice(index + value.length);
-   }
-   function getRandomArrayElement(arr) {
-     return arr[Math.floor(arr.length*Math.random)];
-   }
-   function sortByKey(key, obj1, obj2) {
-   if (obj2 == undefined){
+  }
+  function getRandomArrayElement(arr) {
+    return arr[Math.floor(arr.length*Math.random)];
+  }
+  function sortByKey(key, obj1, obj2) {
+    if (obj2 == undefined){
        return obj1.sort(function(a, b)
        {
         var x = a[key].toLowerCase(); var y = b[key].toLowerCase();
         return ((x < y) ? -1 : ((x > y) ? 1 : 0));
        });
-   } else {
+    } else {
        return obj1.sort(function(a, b)
        {
         var x = obj2[a][key].toLowerCase(); var y = obj2[b][key].toLowerCase();
         return ((x < y) ? -1 : ((x > y) ? 1 : 0));
        });
-   }
-   }
-   function shuffle(array) {
-    /*Fisher-Yates shuffle. The idea is to walk the array in the reverse order and swap each element with a random one before it:
-   https://javascript.info/task/shuffle
-   */
+    }
+  }
+  function shuffle(array) {
+    /* Fisher-Yates shuffle; walk the array in the reverse order and swap each element with a random one before it: https://javascript.info/task/shuffle */
     for (let i = array.length - 1; i > 0; i--) {
       let j = Math.floor(Math.random() * (i + 1)); // random index from 0 to i
       // swap elements array[i] and array[j]
@@ -71,42 +85,28 @@
       // let t = array[i]; array[i] = array[j]; array[j] = t
       [array[i], array[j]] = [array[j], array[i]];
     }
-   }
+  }
 
-   /* looping and recursion */
-  //see https://stackoverflow.com/questions/30452263/is-there-a-mechanism-to-loop-x-times-in-es6-ecmascript-6-without-mutable-varia
-  const recur = (...args) =>
-  ({ type: recur, args })
-
-  const loop = f =>
-    {
-      let acc = f ()
+  /* looping and recursion */
+  /* see https://stackoverflow.com/questions/30452263/is-there-a-mechanism-to-loop-x-times-in-es6-ecmascript-6-without-mutable-varia */
+  const recur = (...args) => ({ type: recur, args });
+  const loop = f => {
+      let acc = f ();
       while (acc.type === recur)
-        acc = f (...acc.args)
-      return acc
-    }
-
-  const repeat = $n => f => x =>
-    loop ((n = $n, acc = x) =>
-      n === 0
-        ? acc
-        : recur (n - 1, f (acc)))
-
-  const inc = x =>
-    x + 1
-
-  const fibonacci = $n =>
-    loop ((n = $n, a = 0, b = 1) =>
-      n === 0
-        ? a
-        : recur (n - 1, b, a + b))
-
+        acc = f (...acc.args);
+      return acc;
+    };
+  const repeat = $n => f => x => loop ((n = $n, acc = x) =>
+      n === 0 ? acc
+        : recur (n - 1, f (acc)));
+  const inc = x => x + 1;
+  const fibonacci = $n => loop ((n = $n, a = 0, b = 1) =>
+      n === 0 ? a
+        : recur (n - 1, b, a + b));
   //console.log (repeat (1e7) (inc) (0)) // 10000000
   //console.log (fibonacci (100))        // 354224848179262000000
-}
 
 /* HTML */
-{
   function $(x) { return document.getElementById(x); }
   function $html(idString, htmlString) {
    if (htmlString != undefined){ $(idString).innerHTML = htmlString; }
@@ -118,11 +118,11 @@
   document.getElementById(idString).innerHTML = existingHtml + htmlString;
   }
   function makeElement(elementTemplateObject) {
-  // given an object with _element name and various properties, assemble and return HTML string
-  let elementType = elementTemplateObject["_element"];
-  if (elementType == undefined){
-  alert("error! an invalid object was passed to " + getFuncName() + ":\n" + JSON.stringify(elementTemplateObject));
-  return;
+    // given an object with _element name and various properties, assemble and return HTML string
+    let elementType = elementTemplateObject._element;
+    if (elementType == undefined){
+    alert("error! an invalid object was passed to " + getFuncName() + ":\n" + JSON.stringify(elementTemplateObject));
+    return;
   }
   let htmlString = "<" + elementType;
   let contents = "";
@@ -237,10 +237,8 @@
     element.style.height = (getPageHeight()-(margin+offset)*2)+"px";
   } //not working unless copied and pasted into pens
   */
-}
 
 /* STORAGE */
-{
   function hasLocal() {
     try {
        if (typeof localStorage !== 'undefined') {
@@ -357,16 +355,14 @@
 
      downloadLink.click();
   }
-}
 
 /* MATH */
-{
   const absValue = (number) => {
     if (number < 0) {
        return -number;
     }
     return number;
-  }
+  };
   function lerp(left,right,amount) {
   var result = ((right*amount)+(left*(1-amount)));
   return result;
@@ -400,7 +396,7 @@
        let thisValue = vectorArray[thisInput];
        newVectorArray.push(thisValue/magnitude);
      }
-    return newVectorArray
+    return newVectorArray;
   }
   function findVectorMagnitude(vectorArray){
   let isZero = true; // to add special case for 0
@@ -490,7 +486,7 @@
   point1 = {x:(A.x-B.x),y:(A.y-B.y)};
   point2 = {x:(C.x-B.x),y:(C.y-B.y)};
   let tempAngle = Math.atan2(point2.y,point2.x)-Math.atan2(point1.y,point1.x);
-  let twoPi = Math.PI*2
+  let twoPi = Math.PI*2;
   while(tempAngle < 0){
     tempAngle += twoPi;
   }
@@ -534,9 +530,7 @@
 /* sound */
    function getFreqFromNote(noteString, a4) {
      let arr = noteString.split("");
-     let notes = {
-        "C":9, "D":7, "E":5, "F":4, "G":2, "A":0, "B":-2
-     }
+     let notes = { "C":9, "D":7, "E":5, "F":4, "G":2, "A":0, "B":-2 };
      let nn = notes[arr.shift().toUpperCase()];
      if (arr[0] == "b" || arr[0] == "♭"){ nn += 1; arr.shift(); }
      if (arr[0] == "#"                 ){ nn -= 1; arr.shift(); }
@@ -559,10 +553,8 @@
      return startA * Math.pow(2, nn/12);
      /* alternative: startA * Math.pow(1.059463094359, nn); */
    }
-}
 
 /* MISC */
-{
   function LevenshteinDistance(a, b){
   if(a.length == 0) return b.length;
   if(b.length == 0) return a.length;
@@ -596,10 +588,8 @@
 
   return matrix[b.length][a.length];
 }
-}
 
 /* TESTS */
-{
    /* v1, as of Nov 30, 2020 */
    function runTest(testResult, expectedResult, alertFlag) {
      let result = (testResult == expectedResult);
@@ -634,4 +624,3 @@
       /* will return '' for anonymous functions */
       return getFuncName.caller.name;
    }
-}

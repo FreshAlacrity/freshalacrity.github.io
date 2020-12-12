@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+<meta charset="UTF-8">
+<title>FreshAlacrity on GitHub</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Code+Pro">
+<link id="page_style" rel="stylesheet" type="text/css" href="./../style.css">
+</head>
+<body>
+<h1>Alacrity Mini Library v1</h1>
+<p>A collection of some personal functions I find useful:</p>
+<pre><code id="a">/* display the lib text here */
+</code></pre>
+
+<!-- load and use highlight.js for syntax highlighting -->
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.4.1/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.4.1/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<!-- load and run the current version of the library -->
+<script src="./v1.js"></script>
+<script>
+
+  fetch("./v1.js")
+    .then(response => response.json())
+    .then(data => console.log(data));
+  //document.getElementById("a").innerHTML = alacrity.print(w);
+
+</script>
+</body>
+</html>
