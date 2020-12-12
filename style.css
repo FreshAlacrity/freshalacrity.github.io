@@ -1,0 +1,12 @@
+body {
+  background: #121212;
+  color: white;
+}
+
+code {
+  // todo add shadow to code blocks
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
