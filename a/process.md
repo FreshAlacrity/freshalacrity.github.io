@@ -1,4 +1,4 @@
-# FreshAlacrity on Github
+# FreshAlacrity Mini Library
 
 ## To Do Next
    - **write unit tests**
@@ -17,6 +17,7 @@
       }();
       ```
    - work on rewriting functions according to personal style and goals
+     - work on getting line lengths more reasonable, <500 chars
    - update smoosh with ideas from ehre: [python dict.update() equivalent in javascript](https://stackoverflow.com/questions/48747589/python-dict-update-equivalent-in-javascript)
      - `Object.assign(target, source);` seems like the best choice
 

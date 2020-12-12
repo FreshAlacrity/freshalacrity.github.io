@@ -4,9 +4,14 @@ body {
 }
 
 code {
+  max-width: 50em;
   // todo add shadow to code blocks
 }
 
 *, *::before, *::after {
   box-sizing: border-box;
+}
+
+a {
+  color: #56B6C2;
 }

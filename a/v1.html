@@ -2,29 +2,33 @@
 <html lang="en" >
 <head>
 <meta charset="UTF-8">
-<title>FreshAlacrity on GitHub</title>
+<title>Alacrity Mini Library</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Code+Pro">
 <link id="page_style" rel="stylesheet" type="text/css" href="./../style.css">
 </head>
 <body>
 <h1>Alacrity Mini Library v1</h1>
-<p>A collection of some personal functions I find useful:</p>
-<pre><code id="a">/* display the lib text here */
-</code></pre>
+<p>A collection of some personal functions I find useful. See also <a href="./process.md">this document of known issues, recent changes, goals and commentary</a>.</p>
+<pre><code id="a">/* code should load here */</code></pre>
 
-<!-- load and use highlight.js for syntax highlighting -->
+<!-- load highlight.js for syntax highlighting -->
 <link rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.4.1/styles/atom-one-dark.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.4.1/highlight.min.js"></script>
-<script>hljs.initHighlightingOnLoad();</script>
-<!-- load and run the current version of the library -->
+
+<!-- run the current version of the library and load into display window -->
 <script src="./v1.js"></script>
 <script>
+  /* jshint esversion: 6 */
 
-  fetch("./v1.js")
-    .then(response => response.json())
-    .then(data => console.log(data));
-  //document.getElementById("a").innerHTML = alacrity.print(w);
+  var libElement = document.getElementById("a");
+  fetch("https://freshalacrity.github.io/a/v1.js")
+    .then(response => response.text())
+    //.then(data => { console.log(data) });
+    .then(data => {
+      libElement.innerHTML = data;
+      hljs.highlightBlock(libElement);
+    });
 
 </script>
 </body>

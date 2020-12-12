@@ -1,4 +1,5 @@
-/*jshint esversion: 6 */
+/* last updated 12/12/2020 */
+/* jshint esversion: 6 */
 
 alacrity = function(){
    var current = null;
@@ -7,13 +8,14 @@ alacrity = function(){
    function verify(){ return "verify"; }
    function printMe(x){ return JSON.stringify(x, null, 2); }
    return {
-     init:init,
-     set:change,
-     print:printMe,
+     /* set aliases visible to outside scopes */
+     init: init,
+     set: change,
+     print: printMe,
    };
  }();
 
- console.log(alacrity.set());
+// console.log(alacrity.set()); // returns "change"
 
 /* GENERAL */
    /* modifications */
@@ -46,7 +48,9 @@ alacrity = function(){
     return newObject;
   }
   function editValueAt(position, stringOrArray, newChar) {
-    if (position >= stringOrArray.length) { alert("the position specified is past the end of the string"); }
+    if (position >= stringOrArray.length) {
+      alert("the position specified is past the end of the string");
+    }
     if (newChar == undefined){
       return stringOrArray.slice(0, position).concat(stringOrArray.slice(position+1, stringOrArray.length));
     } else {
