@@ -1,21 +1,76 @@
-/* last updated 12/12/2020 */
+/* last updated Dec 12, 2020 */
 /* jshint esversion: 6 */
 
 alacrity = function(){
    var current = null;
-   function init(){ return "init"; }
-   function change(){ return "change"; }
-   function verify(){ return "verify"; }
-   function printMe(x){ return JSON.stringify(x, null, 2); }
-   return {
-     /* set aliases visible to outside scopes */
-     init: init,
-     set: change,
-     print: printMe,
-   };
+   function init() { return "init"; }
+   function change() { return "change"; }
+   function verify() { return "verify"; }
+   function log(x) {
+     console.log("a.log: " + x);
+   }
+   /** Returns a neatly formatted string. */
+   function prettyPrint(x) { return JSON.stringify(x, null, 2); }
+
+  /* TESTS */
+    function getFuncName() {
+        /* will return '' for anonymous functions */
+        return getFuncName.caller.name;
+    }
+      function test_getFuncName(){
+        return getFuncName();
+      }
+      test(test_getFuncName(), "test_getFuncName", "getFuncName");
+
+    /**
+    * Quick, simple unit testing function.
+    * @version 1.2, as of Dec 12, 2020
+    * @param {*} actualResult - The actual output, to be tested for equality.
+    * @param {*} expectedResult - The expected output to be tested against.
+    * @param {string} [testName] - The name of the test (providing a name returns a readout instead of a boolean value).
+    * @param {boolean} [suppressLog=false] - Truthy values suppress logging for false tests.
+    * @returns {boolean|string} - If given a testName returns a detailed test result readout, else returns a boolean value representing whether the test passed.
+    */
+    function test(actualResult, expectedResult, testName, suppressLog) {
+      /* convert to strings so object comparisons work well */
+      actualResult = JSON.stringify(actualResult);
+      expectedResult = JSON.stringify(expectedResult);
+
+      let result = (actualResult === expectedResult);
+
+      let readout = `${testName} Test passed: ${result}` +
+      `\n\nActual result: ${actualResult}` +
+      `\n\nExpected result: ${expectedResult}`;
+
+      if (result != true && !suppressLog){
+        /* Any time a test fails, log it unless logs are supressed. */
+        log(readout);
+      }
+
+      if (testName != undefined){
+        return readout;
+      } else {
+        return result;
+      }
+    }
+      test(test(1, 1), true, "Tests True?");
+      test(
+        test(1, 0, "False Test", 1),
+        "False Test Test passed: false\n\nActual result: 1\n\nExpected result: 0", "Silent"
+      );
+
+  /* Reveal functions and set aliases visible to outside scopes. */
+  return {
+    l: log,
+    log: log,
+    test: test,
+    print: prettyPrint,
+  };
  }();
 
-// console.log(alacrity.set()); // returns "change"
+var a = alacrity;
+a.l("'alacrity' library loaded!");
+a.l(a.print.name);
 
 /* GENERAL */
    /* modifications */
@@ -109,6 +164,11 @@ alacrity = function(){
         : recur (n - 1, b, a + b));
   //console.log (repeat (1e7) (inc) (0)) // 10000000
   //console.log (fibonacci (100))        // 354224848179262000000
+
+  /* misc */
+  function sortMap(mapObj){
+    return new Map([...mapObj.entries()].sort());
+  }
 
 /* HTML */
   function $(x) { return document.getElementById(x); }
@@ -595,10 +655,20 @@ alacrity = function(){
 
 /* TESTS */
    /* v1, as of Nov 30, 2020 */
-   function runTest(testResult, expectedResult, alertFlag) {
+   function test(testResult, expectedResult, returnBool) {
+     /*
+     Usage Examples
+       this.test = function(returnBool) {
+         let result = this("foo");
+         let expected = "bar";
+         return alacrity.test(result, expected, returnBool);
+       }
+      print(alacrity.test(function))
+      results.push(alacrity.test(function, 1)) -> bool
+     */
      let result = (testResult == expectedResult);
      let readout = "Actual result: " + testResult + "\n\nExpected result: " + expectedResult + "";
-     if (alertFlag != undefined){
+     if (returnBool != undefined){
        alert(result + readout);
      }
      if (result != true){

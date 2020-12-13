@@ -12,6 +12,7 @@
    * make mockups of stretch goals in Gravit
 
 ### Later
+   * figure out how to round corners (like say, making two points X% of a point-to-point distance away from the corner before and after the corner point and then lerping the corner point towards the point between those for various curves)
    * clicking on dictionary word below loads it into preview
       * only show the dictionary when drawing a single character
    * update the preview when the textbox changes, offer to load old code on startup if available

@@ -8,7 +8,13 @@
 </head>
 <body>
 <h1>Alacrity Mini Library v1</h1>
-<p>A collection of some personal functions I find useful. See also <a href="./process.md">this document of known issues, recent changes, goals and commentary</a>.</p>
+<p>A collection of some personal functions I find useful. See also <a href="./process.md">this document of known issues, recent changes, goals and commentary</a>.</p><br>
+
+<h2>To insert:</h2>
+<code id="insert_code">foo</code><br>
+
+<h2>Current library:</h2>
+<p><a href="./v1.js">Raw code file here.</a></p>
 <pre><code id="a">/* code should load here */</code></pre>
 
 <!-- load highlight.js for syntax highlighting -->
@@ -29,6 +35,11 @@
       libElement.innerHTML = data;
       hljs.highlightBlock(libElement);
     });
+
+    let codeInsertString = $("insert_code");
+    codeInsertString.innerHTML =
+    '&lt;script src="https://freshalacrity.github.io/a/v1.js">&lt;/script>';
+    hljs.highlightBlock(codeInsertString);
 
 </script>
 </body>
