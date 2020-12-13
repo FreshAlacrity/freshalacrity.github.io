@@ -2,17 +2,54 @@
 /* jshint esversion: 6 */
 
 alacrity = function(){
-   var current = null;
-   function init() { return "init"; }
-   function change() { return "change"; }
-   function verify() { return "verify"; }
-   function log(x) {
-     console.log("a.log: " + x);
-   }
-   /** Returns a neatly formatted string. */
-   function prettyPrint(x) { return JSON.stringify(x, null, 2); }
+  /* ALIASES and convenient one-liners */
+    /** Logs things in the standard format for this library so it's clear where the error came from */
+    function log(x) { console.log("a.log: " + x); }
 
-  /* TESTS */
+    /** Returns a neatly formatted string. */
+    function prettyPrint(x) { return JSON.stringify(x, null, 2); }
+
+  /* MATH */
+  /* sound */
+    /**
+     * Note that the harmonic frequencies are just multiples, so to find a note that sounds good with another just multiply it by 2, 3, 4...N
+     * This is an easier and more accurate way of building a palette of truly harmonic notes than using western style notes as given by this formula
+     * @todo add unit test
+     * @param {string} noteString - a string consisting of a capital letter A-G and a number for the octave, plus #, b or ♭ to indicate a flat or sharp
+     * @param {integer|float} [a4=440] - a frequency in Hertz between 400 and 500 to use as A4
+     * Possible Values:
+     *    Concert:     440 Hz
+     *    Baroque:     415 Hz
+     *    Classical:   427–430 Hz
+     *    Chorton:     466 Hz
+     *    European:    444 Hz
+     *    Alternative: 432 Hz
+     * @returns {float} frequency in Hertz
+     */
+    function getFreqFromNote(noteString, a4) {
+       let arr = noteString.split("");
+       let notes = { "C":9, "D":7, "E":5, "F":4, "G":2, "A":0, "B":-2 };
+       let nn = notes[arr.shift().toUpperCase()];
+       if (arr[0] == "b" || arr[0] == "♭"){ nn += 1; arr.shift(); }
+       if (arr[0] == "#"                 ){ nn -= 1; arr.shift(); }
+       let num = parseInt(arr.join(""));
+       nn = ((num - 4) * 12) - nn;
+       let startA = 440;
+       if (a4 != undefined){
+         a4 = parseFloat(a4);
+         if (a4 > 400 && a4 < 500){
+           startA = a4;
+         } else {
+           log("getFreqFromNote received invalid frequency for a4: " + a4);
+         }
+       }
+
+       return startA * Math.pow(2, nn/12);
+       /* alternative: startA * Math.pow(1.059463094359, nn); */
+     }
+      test(Math.floor(getFreqFromNote("B#3")), 261, "B flat 3rd octave");
+
+  /* TESTS and diagnostics */
     function getFuncName() {
         /* will return '' for anonymous functions */
         return getFuncName.caller.name;
@@ -20,7 +57,7 @@ alacrity = function(){
       function test_getFuncName(){
         return getFuncName();
       }
-      test(test_getFuncName(), "test_getFuncName", "getFuncName");
+      test(test_getFuncName(), "test_getFuncName", "Get function name");
 
     /**
     * Quick, simple unit testing function.
@@ -65,12 +102,12 @@ alacrity = function(){
     log: log,
     test: test,
     print: prettyPrint,
+    hzFromNote: getFreqFromNote,
   };
  }();
 
-var a = alacrity;
-a.l("'alacrity' library loaded!");
-a.l(a.print.name);
+alacrity.l("'alacrity' library loaded!");
+
 
 /* GENERAL */
    /* modifications */
@@ -591,32 +628,7 @@ a.l(a.print.name);
          }
    };
 
-/* sound */
-   function getFreqFromNote(noteString, a4) {
-     let arr = noteString.split("");
-     let notes = { "C":9, "D":7, "E":5, "F":4, "G":2, "A":0, "B":-2 };
-     let nn = notes[arr.shift().toUpperCase()];
-     if (arr[0] == "b" || arr[0] == "♭"){ nn += 1; arr.shift(); }
-     if (arr[0] == "#"                 ){ nn -= 1; arr.shift(); }
-     let num = parseInt(arr.join(""));
-     nn = ((num - 4) * 12) - nn;
 
-     /*
-     Concert:     440 Hz
-     Baroque:     415 Hz
-     Classical:   427–430 Hz
-     Chorton:     466 Hz
-     European:    444 Hz
-     Alternative: 432 Hz
-     */
-     let startA = 440;
-     if (a4 && a4 > 400 && a4 < 500){
-       startA = a4;
-     }
-
-     return startA * Math.pow(2, nn/12);
-     /* alternative: startA * Math.pow(1.059463094359, nn); */
-   }
 
 /* MISC */
   function LevenshteinDistance(a, b){

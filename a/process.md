@@ -11,6 +11,7 @@
     - rewrite for test() function
     - documentation added for test() function
     - simple tests added for test() and getFuncName()
+    - documentation for getFreqFromNote() and a console log if an invalid input for @param a4 is received
   Dec 11, 2020
     - added absValue to {math}
     - coding notes seperated into notes.md
