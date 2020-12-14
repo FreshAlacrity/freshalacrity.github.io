@@ -5,6 +5,7 @@
       - currently WIP as of Dec 12, 2020
     - recursion functions may break, need rewrite
     - copypasta from Stack Overflow could use source links
+    - the website is displaying an...odd version of the library with a break in the middle near `function normalizeVector(vectorArray)` that turns the lower half into mostly strings
 
 ## Recent Changes:
   Dec 12, 2020
