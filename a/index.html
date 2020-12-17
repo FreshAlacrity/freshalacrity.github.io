@@ -14,7 +14,10 @@
 <p>A collection of some personal functions I find useful. See also <a href="./process.md">this document of known issues, recent changes, goals and commentary</a>. <a href="./alacrity1.js">Raw code file here.</a></p>
 
 <h3>To insert:</h3>
-<p><code id="insert_code">foo</code></p>
+<p><code id="insert_code">foo</code><br>
+Need pre-ES6 support? Try <a href="https://babeljs.io/">Babel</a>!
+</p>
+
 
 <h3>Current library:</h3>
 <pre><code class="javascript" id="a">/* code should load here */</code></pre>
@@ -43,6 +46,7 @@
     '&lt;script src="https://freshalacrity.github.io/a/alacrity1.js">&lt;/script>';
     hljs.highlightBlock(codeInsertString);
 
+    alacrity.runUnitTests();
 </script>
 </body>
 </html>

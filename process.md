@@ -2,17 +2,25 @@
 
 ## To Do
    - upload large/complex codepens
-   - add shadow to <code> blocks
+   - add row of tab/links in header block with colorful bottom border for selected tab
    - work on developing a personal style for things like buttons, inputs, dropdown menus
      - generally Material inspired
-     - color palette would be handy
+     - use color palette from One Dark?
+       - take into Gravit and mess around with it a bit
+
 ## Recent Changes
-  12/11/2020
+  Dec 13, 2020
+    - updated CSS to a simple Material inspired design
+  Dec 11, 2020
     - added process.md
     - got very basic index.html and style.css going
+
 ## Known Issues
+  - no real content XD
+
 ## Reference/Sub-Projects
   [^1]: [](https://material.io/design/usability/accessibility.html)
+
 ## Goals
   Accessibility
     Web Design

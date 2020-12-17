@@ -49,12 +49,17 @@
 ## Stretch goals:
    * use multiple calls to draw a large fancy character, a horizontal line, and then three vertical 'sentences' below inside a div
    * draw an entire leko style poem starting with the down right diagonal and ending with the box (and then optionally an attribution vertically on the right?)
+   * 'chops' made up of 1-4 characters inside a stylized 'tan' symbol or square
    * draw a character in constellation mode in a large/full-page svg and display the definition to the side (including the sitelen telo character?)
       * sparkles for each point and then lines between, maybe some extra small sparkles
    * large neon sentence with glow and flicker, (toggle for horizontal/vertical)
    * click to translate: cycle through displaying word in roman letters/display english personal definition word/Sitilen telo character/emoji/draw character in stroke order
    * display a paragraph of Toki Pona dynamically in a single SVG block with support for (vertical) line wrapping, bold, and italics
-   * dynamic animated tea timer with a STL countdown phrase where the colors change as it gets closer to 0
+   * dynamic animated tea timer with a STL countdown phrase where the colors change as it gets closer to 0 (#todo check phrases with Z)
+     * tenpo ali (91%+)
+     * tenpo mute (41-90%)
+     * tenpo kama (1-40%)
+     * tenpo ni (0%)
    * pencil effect
       * https://heredragonsabound.blogspot.com/2020/02/creating-pencil-effect-in-svg.html
    * a handwriting/sharpie version that squidges the line ends around and adds a bit of a random arc
