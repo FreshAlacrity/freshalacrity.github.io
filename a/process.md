@@ -1,10 +1,7 @@
 # FreshAlacrity Mini Library
 
 ### Known Issues
-  - many functions fail silently when given invalid inputs
-    - working on adding input validation via typeCheck()
-  - copypasta from Stack Overflow could use source links
-  - the website is displaying an...odd version of the library with a break in the middle near `function normalizeVector(vectorArray)` that turns the lower half into mostly strings
+  - copypasta from Stack Overflow etc. could use source links
   - a lot of the svg functions were made with positive-y-is-up in mind, so they may have odd behavior (but after a quick review they should work fine as long as I remember circles will 'start' at the bottom
 
 ## Recent Changes
@@ -12,7 +9,11 @@
     - removed getFuncName()
     - added typeCheck() and subordinate functions
     - sideReduceToSum() removed due to misleading name and only one use case
+      - replace with mapReduce() and getEachPair()
     - fixed issue with lengthFromPoints() that was causing unit test failure
+    - added add()
+    - archived addDays()
+    - typeCheck() now throws errors to make tracking back issues easier
   Dec 16, 2020
     - refactored all angle and circle drawing functions
     - added runUnitTests() and condensed all unit testing into one block
@@ -40,6 +41,8 @@
     {short section names} are used to save space
 
 ## To Do
+  make a more informative 'loaded' message that includes a version number
+  check for @todo in code
   add support when mapping through tests to make section headers that are just strings
   replace where I check if parameters are undefined with = in params
   for svgs: For reliable results cross-browser, use numbers with no more than 2 digits after the decimal and four digits before it.
@@ -78,12 +81,13 @@
     - [Douglas Crockford's Wrrrld Wide Web](http://www.crockford.com/)
     - [JS Assessment](https://github.com/rmurphey/js-assessment)
   later
-  offer a minified version?
-    try https://javascript-minifier.com/
+    check for @later in code
+    offer a minified version?
+      try https://javascript-minifier.com/
   ### Wishlist
-    - stringMatchQuality(){
-        // to complement LevenshteinMatchQuality
-      }
+    - stringMatchQuality()
+      to complement LevenshteinMatchQuality()
+      returns a value between 0 and 1 where 1 is the strings are identical and 0 is the string does not contain the search term and .5 is the search term accounts for half the character length of the string
     - listByKey()
       - take an array of objects and a key and turn it into an dictionary of arrays with the keys of the new dictionary being all the values of that key in the original array of objects and their values being arrays of all the original objects which have that value
         - default to puting things with multiple entries at the ends of their respective lists?

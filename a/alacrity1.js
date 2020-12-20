@@ -1,18 +1,72 @@
-/* last updated Dec 12, 2020 */
+/* last updated Dec 17, 2020 */
 /* jshint esversion: 6 */
 /* jshint undef: true, unused: true */
 /* globals document, window, console, alert, sessionStorage, localStorage */
 /* globals Blob */
 /* see https://jshint.com/docs/ */
 
-/* shortcuts: */
+
+/* Common shortcuts: */
 function $(x) { return document.getElementById(x); }
 
+
 const alacrity = function(){
+
+/* TESTING */
+  /* Setup for runUnitTests() */
   let unitTests = [];
 
-/* GENERAL */
-  /* Setup for typeCheck() */
+  /**
+  * Quick, simple unit testing function.
+  * @version 1.2, as of Dec 12, 2020
+  * @param {*} actualResult - The actual output, to be tested for equality.
+  * @param {*} expectedResult - The expected output to be tested against.
+  * @param {string} [testName] - The name of the test (providing a name returns a readout instead of a boolean value).
+  * @param {boolean} [suppressLog=false] - Truthy values suppress logging for false tests.
+  * @returns {boolean|string} - If given a testName returns a detailed test result readout, else returns a boolean value representing whether the test passed.
+  */
+  function test(testName, actualResult, expectedResult, suppressLog) {
+    /* convert to strings so object comparisons work well */
+    actualResult = JSON.stringify(actualResult);
+    expectedResult = JSON.stringify(expectedResult);
+
+    let result = (actualResult === expectedResult);
+
+    let readout = `${result} ${testName}` +
+    `\n\nActual result: ${actualResult}` +
+    `\n\nExpected result: ${expectedResult}\n`;
+
+    if (!suppressLog){
+      /* Any time a test fails, log it unless logs are supressed. */
+      log(readout);
+    }
+    if (result){
+      return result;
+    } else {
+      return readout;
+    }
+  }
+  unitTests.push(["test()",
+    [test("True Test", 1, 1, 1), true],
+    [test("False Test", 1, 0, 1), "false False Test\n\nActual result: 1\n\nExpected result: 0\n"]
+  ]);
+
+  /** Run a sequence of tests from an array through test() */
+  function tests(name, ...testArrays){
+    let runTest = (a, i) => {
+      return `${name} Test ${i + 1}: ` + test("", a[0], a[1], 1);
+    };
+    let results = testArrays.map(runTest).join('\n');
+    return results;
+  }
+
+  /** Run all the tests in the unitTests array. */
+  function runUnitTests(){
+    let testResults = unitTests.map(a => tests(...a));
+    log("Unit Test Results:\n-------------------------\n" + testResults.join('\n'));
+ }
+
+  /* Setup for testFunction() */
   const testDict = {
     string: (a => typeof a === 'string'),
     number: (a => typeof a === 'number'),
@@ -22,6 +76,8 @@ const alacrity = function(){
     array:  (a => Array.isArray(a)),
     any: (() => true)
   };
+
+  /** Fetches functions for checkType() to use. */
   function testFunction(key){
     if (typeof testDict[key] === 'function'){
       return testDict[key];
@@ -30,7 +86,10 @@ const alacrity = function(){
       return () => false;
     }
   }
-  function checkType(typeArray, value){
+
+  /** Handles individual value type checking for typeCheck() */
+  function checkType(types, value){
+    let typeArray = copy(types);
     /* @later have this allow multiple nested layers */
     let key = typeArray.shift();
     if (!testFunction(key)(value)) {
@@ -43,9 +102,15 @@ const alacrity = function(){
         return true;
       } else {
         if (next === 'with'){
-          value = Object.keys(value);
-        }
-        if (value.length === 0){
+          if (JSON.stringify(value) === "{}"){
+            return false;
+          } else if (typeArray[0] === 'any' ||
+                     value.hasOwnProperty(typeArray[0])){
+            return true;
+          } else {
+            return false;
+          }
+        } else if (value.length === 0){
           /* We're checking for content type, but there are no contents. */
           return false;
         } else {
@@ -57,11 +122,14 @@ const alacrity = function(){
 
   /**
    * @param {string} typesString - a string of types seperated by spaces that may or may not contain the keywords test, of, with, any
+   * @param {...values} - a list of one or more values to check against the typesString with testFunction(), ex 'array of number'
    * @todo implement x[digits] keyword
+   * @later extend to three layers deep? ex. 'array of dict with name'
    * @note Keywords:
    * test as first word: suppresses logging/error throws
    * of: checks the contents of an array
-   * with: checks for specific dictionary keys (except 'any')
+   * with: checks for specific dictionary keys
+   *       (except 'any' which checks for the presence of any keys at all)
    * any: matches any type or key
    * x[digits]: matches only that number of things
    */
@@ -73,45 +141,47 @@ const alacrity = function(){
     if (results.every(Boolean)){
       return true;
     } else {
-      // @later throw new Error()? passing "test" as the first part of the type string should suppress logs
       if (makeLog){
-        log(`typeCheck failed for type: '${typesString}' on value:`, toCheck);
+        throw new Error(`typeCheck failed for type: '${typesString}' on value:`, toCheck);
       }
       return false;
     }
   }
-    unitTests.push(["typeCheck()",
-      [typeCheck('number', 1), true],
-      [typeCheck('test number', "foo"), false],
-      [typeCheck('string', ""), true],
-      [typeCheck('array of number', [1, 2, 3]), true],
-      [typeCheck('test array of number', [1, 2, "taco"]), false],
-      [typeCheck('array of number x2', [1, 2]), true],
-      //[typeCheck('array of number x2', [1, 2, 3]), false],
-      [typeCheck('dict with any', {foo:1}), true],
-      [typeCheck('test object with any', {}), false],
-      [typeCheck('array of any', [1]), true],
-      [typeCheck('test array of any', []), false]
-    ]);
+  unitTests.push(["typeCheck()",
+    [typeCheck('number', 1), true],
+    [typeCheck('test number', "foo"), false],
+    [typeCheck('string', ""), true],
+    [typeCheck('array of number', [1, -2, 3]), true],
+    [typeCheck('array of number', [1, 2, 4], [4, -10, 3]), true],
+    [typeCheck('test array of number', [1, 2, "taco"]), false],
+    [typeCheck('array of number x2', [1, 2]), true],
+    //[typeCheck('array of number x2', [1, 2, 3]), false],
+    [typeCheck('dict with any', {foo:1}), true],
+    [typeCheck('dict with name', {name:"Maple"}), true],
+    [typeCheck('test dict with name', {tree:"Maple"}), false],
+    [typeCheck('test object with any', {}), false],
+    [typeCheck('array of any', [1]), true],
+    [typeCheck('test array of any', []), false]
+  ]);
 
+/* GENERAL */
 /* modifications */
   /** @note Strips out properties whose values are functions or undefined and converts NaN and Infinity to null.
    */
   function copy(inputObj) {
     return JSON.parse(JSON.stringify(inputObj));
   }
-    unitTests.push(["copy()",
-      [copy({foo:2,beep:"A",bop:1000,bip:undefined}),{"foo":2,"beep":"A","bop":1000}],
-    ]);
+  unitTests.push(["copy()",
+    [copy({foo:2,beep:"A",bop:1000,bip:undefined}),{"foo":2,"beep":"A","bop":1000}],
+  ]);
 
   /** A 'safe' wrapper for Object.assign() that won't mutate the target object.
     * @param {object} targetObject
     * @param {...object} overrideObjects - any number of objects to smoosh into the targetObject
     */
   function smooshObjects(targetObject, ...overrideObjects) {
-    if (typeCheck('object with any', targetObject, ...overrideObjects)){
-      return Object.assign(copy(targetObject), ...overrideObjects);
-    }
+    typeCheck('object with any', targetObject, ...overrideObjects);
+    return Object.assign(copy(targetObject), ...overrideObjects);
     /* old version:
     let tempJSON = JSON.stringify(mainObject);
     let newObject = JSON.parse(tempJSON);
@@ -121,9 +191,9 @@ const alacrity = function(){
     return newObject;
     */
   }
-    unitTests.push(["smooshObjects()",
-      [smooshObjects({foo:1,bar:"Q"},{foo:2,beep:"A",bop:1000}),{"foo":2,"bar":"Q","beep":"A","bop":1000}],
-    ]);
+  unitTests.push(["smooshObjects()",
+    [smooshObjects({foo:1,bar:"Q"},{foo:2,beep:"A",bop:1000}),{"foo":2,"bar":"Q","beep":"A","bop":1000}],
+  ]);
 
   /**
    * Adds a value into the input string or array at a given index, replacing the original contents to do so proportionately to the length of the new value. Will return a string or array that is shorter than the original if given an empty string as input.
@@ -142,30 +212,30 @@ const alacrity = function(){
       return stringOrArray.slice(0, index).concat(value).concat(stringOrArray.slice(index + length));
     }
   }
-    unitTests.push(["editValueAt()",
-      [editValueAt("beep bop", 0, "boop "),"boop bop"],
-      [editValueAt([1,3,4,5], 1, [2,3]),[1,2,3,5]],
-      [editValueAt([1,3,4,5], 2, "foo"),[1,3,"foo",5]],
-      [editValueAt([1,3,4,5], 1),[1,4,5]]
-    ]);
+  unitTests.push(["editValueAt()",
+    [editValueAt("beep bop", 0, "boop "),"boop bop"],
+    [editValueAt([1,3,4,5], 1, [2,3]),[1,2,3,5]],
+    [editValueAt([1,3,4,5], 2, "foo"),[1,3,"foo",5]],
+    [editValueAt([1,3,4,5], 1),[1,4,5]]
+  ]);
 
   /** Adds the value into the input string or array at a given index, displacing the original contents. */
   function spliceInto(stringOrArray, index, value) {
     return stringOrArray.slice(0, index).concat(value).concat(stringOrArray.slice(index));
   }
-    unitTests.push(["spliceInto()",
-      [spliceInto("ac", 1, "b"),"abc"],
-      [spliceInto([1,4,5], 1, [2, 3]),[1,2,3,4,5]]
-    ]);
+  unitTests.push(["spliceInto()",
+    [spliceInto("ac", 1, "b"),"abc"],
+    [spliceInto([1,4,5], 1, [2, 3]),[1,2,3,4,5]]
+  ]);
 
   /** Returns an element of the input array at random. */
   function getRandomArrayElement(arr) {
     return arr[Math.floor(arr.length * Math.random())];
   }
-    unitTests.push(["getRandomArrayElement()",
-      [getRandomArrayElement([1]), 1],
-      [getRandomArrayElement([0, 1, 2, 3]) in [5, 6, 7, 8], true]
-    ]);
+  unitTests.push(["getRandomArrayElement()",
+    [getRandomArrayElement([1]), 1],
+    [getRandomArrayElement([0, 1, 2, 3]) in [5, 6, 7, 8], true]
+  ]);
 
   /** Uses the Fisher-Yates shuffle to shuffle an array (walk the array in the reverse order and swap each element with a random one before it)
    * {@link https://javascript.info/task/shuffle source}
@@ -189,34 +259,32 @@ const alacrity = function(){
 
   /** Applies a given function to reduce all the arrays within a multidimensional array. */
   function mapReduce(reduceWith, mArr) {
-    if (typeCheck('array of array', mArr)){
-      return mArr.map(a => a.reduce(reduceWith));
-    }
+    typeCheck('array of array', mArr);
+    return mArr.map(a => a.reduce(reduceWith));
   }
 
   function getEachPair(array){
-    if (typeCheck('array', array)){
-      let copy1 = copy(array);
-      let copy2 = copy(array);
-      copy1.pop();
-      copy2.shift();
-      return transpose([copy1,copy2]);
-    }
+    typeCheck('array', array);
+    let copy1 = copy(array);
+    let copy2 = copy(array);
+    copy1.pop();
+    copy2.shift();
+    return transpose([copy1,copy2]);
   }
-    unitTests.push(["getEachPair()",
-      [getEachPair([1,2,4,5,7]),[[1,2],[2,4],[4,5],[5,7]]],
-      [getEachPair([[-5,1,0],[0,1,0],[0,1,10]]),[[[-5,1,0],[0,1,0]],[[0,1,0],[0,1,10]]]]
-    ]);
+  unitTests.push(["getEachPair()",
+    [getEachPair([1,2,4,5,7]),[[1,2],[2,4],[4,5],[5,7]]],
+    [getEachPair([[-5,1,0],[0,1,0],[0,1,10]]),[[[-5,1,0],[0,1,0]],[[0,1,0],[0,1,10]]]]
+  ]);
 
   /** @todo add tests, start replacing places where I do transpose and mapreduce anyway */
-  function pairwise(func, ...vectors) {
-    if (typeCheck('function', func) && typeCheck('array', vectors)){
-      return mapReduce(func, transpose(vectors));
-    }
+  function pairwise(func, vectors) {
+    typeCheck('function', func);
+    typeCheck('array', vectors);
+    return mapReduce(func, transpose(vectors));
   }
-      unitTests.push(["pairwise",
-        [pairwise(((a, b) => a + b), [0,2], [2,6]),[2,8]]
-      ]);
+  unitTests.push(["pairwise",
+    [pairwise(((a, b) => a + b), [[0,2], [2,6]]), [2,8]]
+  ]);
 
   /** Sorts mixed arrays of letters and numbers and capitalized/uncapitalized strings neatly; by default it sorts letters before numbers and capital letters before the same letter in lowercase. */
   function sensibleSort(a, b, numsFirst) {
@@ -242,10 +310,10 @@ const alacrity = function(){
     }
     return ((x < y) ? -1 : ((x > y) ? 1 : 0));
   }
-    unitTests.push(["sensibleSort()",
-      [["C","b",20,"c","a","A","B",500,1,2,3].sort(sensibleSort),
-      ["A","a","B","b","C","c",1,2,3,20,500]]
-    ]);
+  unitTests.push(["sensibleSort()",
+    [["C","b",20,"c","a","A","B",500,1,2,3].sort(sensibleSort),
+    ["A","a","B","b","C","c",1,2,3,20,500]]
+  ]);
 
   /**
    * Sorts an array of objects by the contents of a particular key in those objects using sensibleSort().
@@ -259,17 +327,17 @@ const alacrity = function(){
        return sensibleSort(a[key],b[key]);
      });
   }
-    unitTests.push(["sortByKey()",
-      [sortByKey("bar",
-      [{foo: 3, bar: "c"}, {foo: 1, bar: "a"}, {foo: 2, bar: "B"}]),
-      [{foo: 1, bar: "a"}, {foo: 2, bar: "B"}, {foo: 3, bar: "c"}]],
-      [sortByKey("foo",
-      [{foo: 2, bar: "c"}, {foo: 1, bar: "a"}, {foo: 3, bar: "B"}]),
-      [{foo: 1, bar: "a"}, {foo: 2, bar: "c"}, {foo: 3, bar: "B"}]],
-      [sortByKey("foo",
-      {q:{foo: 2, bar: "c"}, r:{foo: 1, bar: "a"}, s:{foo: 3, bar: "B"}}),
-      [{foo: 1, bar: "a"}, {foo: 2, bar: "c"}, {foo: 3, bar: "B"}]]
-    ]);
+  unitTests.push(["sortByKey()",
+    [sortByKey("bar",
+    [{foo: 3, bar: "c"}, {foo: 1, bar: "a"}, {foo: 2, bar: "B"}]),
+    [{foo: 1, bar: "a"}, {foo: 2, bar: "B"}, {foo: 3, bar: "c"}]],
+    [sortByKey("foo",
+    [{foo: 2, bar: "c"}, {foo: 1, bar: "a"}, {foo: 3, bar: "B"}]),
+    [{foo: 1, bar: "a"}, {foo: 2, bar: "c"}, {foo: 3, bar: "B"}]],
+    [sortByKey("foo",
+    {q:{foo: 2, bar: "c"}, r:{foo: 1, bar: "a"}, s:{foo: 3, bar: "B"}}),
+    [{foo: 1, bar: "a"}, {foo: 2, bar: "c"}, {foo: 3, bar: "B"}]]
+  ]);
 
   /**
    * Sorts a map object and returns a sorted version.
@@ -283,18 +351,17 @@ const alacrity = function(){
   function dictToArray(dictObj){
     return Object.keys(dictObj).map(a => dictObj[a]);
   }
-    unitTests.push(["dictToArray()",
-      [dictToArray({a:"foo", b:"bar"}),["foo","bar"]]
-    ]);
+  unitTests.push(["dictToArray()",
+    [dictToArray({a:"foo", b:"bar"}),["foo","bar"]]
+  ]);
 
 /* HTML */
   function $html(idString, htmlString) {
-   if (typeCheck('string', idString, htmlString)){
-     if (htmlString != undefined){
-       $(idString).innerHTML = htmlString;
-     }
-     return $(idString).innerHTML;
-    }
+   typeCheck('string', idString, htmlString);
+   if (htmlString != undefined){
+     $(idString).innerHTML = htmlString;
+   }
+   return $(idString).innerHTML;
   }
   function addHtml(idString, htmlString) {
     let element = $(idString);
@@ -364,12 +431,11 @@ const alacrity = function(){
   * @todo make this work better with/alongside makeElement()?
   */
   function quickAddElement(type, innerHtml = "", newId = "") {
-    if (typeCheck('string', type, innerHtml, newId)){
-      let newElement = document.createElement(type);
-      document.body.appendChild(newElement);
-      newElement.innerHTML = innerHtml;
-      if (newId){ newElement.id = newId; }
-    }
+    typeCheck('string', type, innerHtml, newId);
+    let newElement = document.createElement(type);
+    document.body.appendChild(newElement);
+    newElement.innerHTML = innerHtml;
+    if (newId){ newElement.id = newId; }
   }
 
   /** Creates a new paragraph element in the page body containing the specified text in a preformatted block.
@@ -555,12 +621,12 @@ const alacrity = function(){
     while (result > maxN){ result -= step; }
     return result;
   }
-    unitTests.push(["fix()",
-      [fix("20", 0, 10), 10],
-      [fix(12.4, -20, 10), -17.6],
-      [fix(5, 40, 10), 35],
-      [fix(11005, 40), 5]
-    ]);
+  unitTests.push(["fix()",
+    [fix("20", 0, 10), 10],
+    [fix(12.4, -20, 10), -17.6],
+    [fix(5, 40, 10), 35],
+    [fix(11005, 40), 5]
+  ]);
 
   /**
    * @param {number} boundA - one bound of the result
@@ -578,12 +644,12 @@ const alacrity = function(){
     let upper = Math.floor(Math.max(boundA, boundB));
     return Math.floor(lower + (upper - lower + 1) * Math.random());
   }
-    unitTests.push(["randBetween()",
-      [randBetween("20", 0) >= 0, true],
-      [randBetween(0, -20) <= 0, true],
-      [randBetween(5, 5), 5],
-      [randBetween(11005) <= 11005, true]
-    ]);
+  unitTests.push(["randBetween()",
+    [randBetween("20", 0) >= 0, true],
+    [randBetween(0, -20) <= 0, true],
+    [randBetween(5, 5), 5],
+    [randBetween(11005) <= 11005, true]
+  ]);
 
   /** Performs linear interpolation between two known points, returning a number between v1 and v2 t% the way across and which returns v1 when t = 1. If t is not specified, returns the halfway point. */
   function lerp(v1, v2, t = 0.5) {
@@ -595,11 +661,11 @@ const alacrity = function(){
       return transpose([v1, v2]).map(lr);
     }
   }
-    unitTests.push(["lerp()",
-      [lerp(0, 10), 5],
-      [lerp(10, 20, 0.1), 11],
-      [lerp([0, 4, 2], [20, 0, -10], 0.5), [10, 2, -4]]
-    ]);
+  unitTests.push(["lerp()",
+    [lerp(0, 10), 5],
+    [lerp(10, 20, 0.1), 11],
+    [lerp([0, 4, 2], [20, 0, -10], 0.5), [10, 2, -4]]
+  ]);
 
   /**
   * Offsets one point towards another by a specifc distance; see also lerp() to offset one point towards another by proportion of the distance.
@@ -620,56 +686,54 @@ const alacrity = function(){
       return subtract(...args);
     } else {
       /* subtract the values of the second array from the first */
-      return mapReduce(subtract, transpose(args));
+      //findme
+      //return mapReduce(subtract, transpose(args));
+      return pairwise(((a, b) => a - b), args);
     }
   }
-    unitTests.push(["findOffset()",
-      [findOffset(0,4), -4],
-      [findOffset([0,4]), -4],
-      [findOffset([0,1],[0,2]), [0,-1]],
-      [findOffset([-5,1,0],[1,0,6]), [-6,1,-6]]
-    ]);
+  unitTests.push(["findOffset()",
+    [findOffset(0,4), -4],
+    [findOffset([0,4]), -4],
+    [findOffset([0,1],[0,2]), [0,-1]],
+    [findOffset([-5,1,0],[1,0,6]), [-6,1,-6]]
+  ]);
 
 /* vectors */
-    /** @todo implement */
-    /*
-    function addVectors(){
-      //does this work?
-      //(a, b) => a.map((v, i) => v+b[i])
-    }
-    */
+  /** @todo implement */
 
-    /** Normalize/find unit vector from vector array/array of magnitudes by axis.
-     * @param {number[]} vectorArray - an array of N numbers
-     * @returns {number[]} a vector array/array of N magnitudes that covers a unit distance/distance of 1 unit
-     */
-    function normalizeVector(vectorArray){
-      let magnitude = findVectorMagnitude(vectorArray);
-      let newVectorArray = [];
-      /* @todo rewrite this for loop */
-      for (let thisInput = 0; thisInput < vectorArray.length; thisInput++){
-         let thisValue = vectorArray[thisInput];
-         newVectorArray.push(thisValue/magnitude);
-       }
-      return newVectorArray;
-    }
+  /** Normalize/find unit vector from vector array/array of magnitudes by axis.
+   * @param {number[]} vectorArray - an array of N numbers
+   * @returns {number[]} a vector array/array of N magnitudes that covers a unit distance/distance of 1 unit
+   */
+  function normalizeVector(vectorArray){
+    let magnitude = findVectorMagnitude(vectorArray);
+    let newVectorArray = [];
+    /* @todo rewrite this for loop */
+    for (let thisInput = 0; thisInput < vectorArray.length; thisInput++){
+       let thisValue = vectorArray[thisInput];
+       newVectorArray.push(thisValue/magnitude);
+     }
+    return newVectorArray;
+  }
 
-    /**
-     * Finds the magnitude of a vector by returning the square root of the sum
-     * of the squares of each number in the array.
-     * @param {number[]} vectorArray - an array of numbers comprising a vector
-     */
-    function findVectorMagnitude(vectorArray){
-      if (typeCheck('array', vectorArray)){
-        return Math.sqrt(vectorArray.map(a => a * a).reduce((a, b) => a + b));
-      }
-    }
-      unitTests.push(["Vector Operations",
-        [findVectorMagnitude(normalizeVector([1,2,3])),1],
-        [findVectorMagnitude([3,4]), 5]
-      ]);
+  /**
+   * Finds the magnitude of a vector by returning the square root of the sum
+   * of the squares of each number in the array.
+   * @param {number[]} vectorArray - an array of numbers comprising a vector
+   */
+  function findVectorMagnitude(vectorArray){
+    typeCheck('array', vectorArray);
+    return Math.sqrt(vectorArray.map(a => a * a).reduce((a, b) => a + b));
+  }
+  unitTests.push(["Vector Operations",
+    [findVectorMagnitude(normalizeVector([1,2,3])),1],
+    [findVectorMagnitude([3,4]), 5]
+  ]);
 
-  /** Calculates distance in N-dimensional space; see also lengthFromPoints() for the length of a path that has 3+ points. */
+  /**
+   * Calculates distance in N-dimensional space.
+    * @note See also lengthFromPoints() for the length of a path that has 3+ points.
+   */
   function distanceBetweenTwoPoints(pointA, pointB){
     let vector = findOffset(pointA, pointB);
     if (typeof vector === 'number'){
@@ -678,28 +742,21 @@ const alacrity = function(){
       return findVectorMagnitude(vector);
     }
   }
-    unitTests.push(["distanceBetweenPoints()",
-      [distanceBetweenTwoPoints(0, 4), 4],
-      [distanceBetweenTwoPoints([0,1],[0,2]), 1],
-      [Math.floor(distanceBetweenTwoPoints([-5,1,0],[1,0,6])), 8]
-    ]);
+  unitTests.push(["distanceBetweenPoints()",
+    [distanceBetweenTwoPoints(0, 4), 4],
+    [distanceBetweenTwoPoints([0,1],[0,2]), 1],
+    [Math.floor(distanceBetweenTwoPoints([-5,1,0],[1,0,6])), 8]
+  ]);
 
-  function lengthFromPoints(args) {
-    if (args.length === 1 && typeof args[0] !== 'number'){
-      /* if our array ended up with too many layers, unwrap it */
-      args = args[0];
-    }
-    //log(typeof args[0]);
-    //if (typeCheck('array of number', args)){
-      let list = mapReduce(distanceBetweenTwoPoints, getEachPair(args));
-      return list.reduce((a, b) => a + b);
-    //}
+  function lengthFromPoints(...args) {
+    let list = mapReduce(distanceBetweenTwoPoints, getEachPair(args));
+    return list.reduce((a, b) => a + b);
   }
-    unitTests.push(["lengthFromPoints()",
-      [lengthFromPoints([-5,1]), 6],
-      [lengthFromPoints([[-5,1],[0,1],[0,6]]), 10],
-      [lengthFromPoints([[-5,1,0],[0,1,0],[0,1,10]]), 15]
-    ]);
+  unitTests.push(["lengthFromPoints()",
+    [lengthFromPoints(-5,1), 6],
+    [lengthFromPoints([-5,1],[0,1],[0,6]), 10],
+    [lengthFromPoints([-5,1,0],[0,1,0],[0,1,10]), 15]
+  ]);
 
   /* @todo import functions from stl/myScript.js here */
 
@@ -719,20 +776,20 @@ const alacrity = function(){
     decimal = decimal % 1;
     return decimal * 2 * Math.PI;
   }
-    unitTests.push(["radiansFromDecimal()",
-      [radiansFromDecimal(0), 0],
-      [radiansFromDecimal(1), 0],
-      [radiansFromDecimal(-1), 0],
-      [Math.floor(radiansFromDecimal(0.25) * 100), 157]
-    ]);
+  unitTests.push(["radiansFromDecimal()",
+    [radiansFromDecimal(0), 0],
+    [radiansFromDecimal(1), 0],
+    [radiansFromDecimal(-1), 0],
+    [Math.floor(radiansFromDecimal(0.25) * 100), 157]
+  ]);
 
   function roundToPlaces(places, number){
     let precision = Math.pow(10, (+places));
     return Math.round(number * precision) / precision;
   }
-    unitTests.push(["roundToPlaces()",
-      [roundToPlaces(3, 3.18273481), 3.183]
-    ]);
+  unitTests.push(["roundToPlaces()",
+    [roundToPlaces(3, 3.18273481), 3.183]
+  ]);
 
   /**
    * Get the coordinates on a circle centered at 0, 0 with a radius of 1 (a unit circle) from a decimal value 0-1 where 0 and 1 are both in the positive Y direction at X = 0.
@@ -745,12 +802,12 @@ const alacrity = function(){
     y = roundToPlaces(places, y);
     return [x, y];
   }
-    unitTests.push(["unitCircleCoordsFromDecimal()",
-      [unitCircleCoordsFromDecimal(0, 100),[0,1]],
-      [unitCircleCoordsFromDecimal(0.25, 5),[1,0]],
-      [unitCircleCoordsFromDecimal(0.75, 1),[-1, 0]],
-      [unitCircleCoordsFromDecimal(0.7, 3),[-0.951, -0.309]]
-    ]);
+  unitTests.push(["unitCircleCoordsFromDecimal()",
+    [unitCircleCoordsFromDecimal(0, 100),[0,1]],
+    [unitCircleCoordsFromDecimal(0.25, 5),[1,0]],
+    [unitCircleCoordsFromDecimal(0.75, 1),[-1, 0]],
+    [unitCircleCoordsFromDecimal(0.7, 3),[-0.951, -0.309]]
+  ]);
 
   /**
    * @param {number} decimal - a number between 0 and 1 where 0 is the point at 0,1 on a unit circle and 1 represents a full circle back to that point
@@ -761,67 +818,75 @@ const alacrity = function(){
     let finalY = unitCoords[1] * radius + center[1];
     return [finalX, finalY];
   }
-    unitTests.push(["getPointOnCircle()",
-      [getPointOnCircle([0, 0], 10, 0),[0,10]],
-      [getPointOnCircle([-10, 0], 10, 0),[-10,10]]
-    ]);
+  unitTests.push(["getPointOnCircle()",
+    [getPointOnCircle([0, 0], 10, 0),[0,10]],
+    [getPointOnCircle([-10, 0], 10, 0),[-10,10]]
+  ]);
 
-  /** @todo rewrite to use makeElement()? */
+  /** @later rewrite so it just makes the d value to use makeElement()? */
   function getSvgPieWedgeElement(centerCoords, radius, startDecimal, endDecimal, longwayFlag = 1, style = "") {
-  let startCoords = getPointOnCircle(centerCoords, radius, startDecimal);
-  let endCoords   = getPointOnCircle(centerCoords, radius, endDecimal  );
+    let startCoords = getPointOnCircle(centerCoords, radius, startDecimal);
+    let endCoords   = getPointOnCircle(centerCoords, radius, endDecimal  );
 
-  /* If the arc overlaps the 0 point, switch the flag:
-   * @todo check that this is actually what is needed/happening */
-  if ((startDecimal - endDecimal) < 0){ longwayFlag = 0; }
+    /* If the arc overlaps the 0 point, switch the flag:
+     * @later check that this is actually what is needed/happening
+     * see also getSvgArcElement() */
+    if ((startDecimal - endDecimal) < 0){ longwayFlag = +!longwayFlag; }
 
-  return (`<path d="M ${startCoords} A ${radius} ${radius} 1 ${longwayFlag} 1 ${endCoords} Z" ${style}" />`);
+    return `<path d="M ${startCoords} A ${radius} ${radius} 1 ${longwayFlag} 1 ${endCoords} Z" ${style} />`;
   }
-    //test(getSvgPieWedgeElement([100,100],50,0.25,0.5,1,'stroke="red"'),"unknown","getSvgPieWedgeElement() Test 1");
+  unitTests.push(["getSvgPieWedgeElement()",
+    [getSvgPieWedgeElement([100,100],50,0.25,0.5,0,'stroke="red"'),'<path d="M 150,100 A 50 50 1 1 1 100,50 Z" stroke="red" />']
+  ]);
 
-  /** @todo rewrite to use makeElement()? */
-  function getSvgArcElement(centerX, centerY, radius, startPercent, endPercent, style) {
-    let unitCoords1 = unitCircleCoordsFromDecimal(startPercent/100);
-    let startX = unitCoords1.x*radius+centerX;
-    let startY = unitCoords1.y*radius+centerY;
-    let unitCoords2 = unitCircleCoordsFromDecimal(endPercent/100);
-    let finalX = unitCoords2.x*radius+centerX;
-    let finalY = unitCoords2.y*radius+centerY;
-    let longwayFlag = Math.round((endPercent-startPercent)/100);
-    //svg a [rx] [ry] [1 for circles] [go the long way?] [1 for pies] [end x] [end y]
-    return ('<path d="M '+startX+' '+startY+' A '+radius+' '+radius+' 1 '+longwayFlag+' 1 '+finalX+' '+finalY+' " style="'+style+'" />');
+  /** Adds vectors only, not bare numbers. */
+  function add(...vectors) {
+    typeCheck('array of number', ...vectors);
+    return pairwise((a, b) => a + b, vectors);
+    /* alternatively, for only two inputs:
+     * (a, b) => a.map((v, i) => v+b[i])
+     */
   }
+  unitTests.push(["add()",
+    [add([1,2,4],[4,1,-10]),[5,3,-6]],
+  ]);
+
+  /** @later rewrite so it just makes the d value to use makeElement()? */
+  function getSvgArcElement(center, radius, startDecimal, endDecimal, longwayFlag = 1, style = "") {
+    let startCoords = getPointOnCircle(center, radius, startDecimal);
+    let endCoords   = getPointOnCircle(center, radius, endDecimal  );
+
+    /* If the arc overlaps the 0 point, switch the flag:
+     * @later check that this is actually what is needed/happening
+     * see also getSvgPieWedgeElement() */
+    if ((startDecimal - endDecimal) < 0){ longwayFlag = +!longwayFlag; }
+    //let longwayFlag = Math.round(startDecimal-endDecimal);
+
+    /* svg a [rx] [ry] [1 for circles] [go the long way?] [1 for pies] [end x] [end y] */
+    return `<path d="M ${startCoords} A ${radius} ${radius} 1 ${longwayFlag} 1 ${endCoords}" ${style} />`;
+  }
+  unitTests.push(["getSvgArcElement()",
+    [getSvgArcElement([100,200],55,0.25,0.75,0,`fill="none"`),"<path d=\"M 155,200 A 55 55 1 1 1 45,200\" fill=\"none\" />"],
+  ]);
 
   /** Converts radians to degrees. */
   function degreesFromRadians(radians){
     return radians * 180 / Math.PI;
   }
 
-  /** Gets angle in radians from a set of three points; the second point must be the center point.
-   * @todo rewrite
+  /**
+   * Gets angle in radians from a set of three points; the second point must be the center point.
+   * @later check that this is working in context
    */
-  function radiansFromThreePoints(firstPoint, centerPoint, thirdPoint){
+  function radiansFromThreePoints(firstPoint, centerPoint, thirdPoint) {
     return radiansFromTwoPoints(centerPoint, thirdPoint) -
            radiansFromTwoPoints(centerPoint, firstPoint);
-    //let twoPi = Math.PI * 2;
-    //fix(0, twoPi)
   }
 
 /* dates */
-  /** @todo see if luxon.js does this and if so archive: */
-   function addDays(days, date) {
-      /* see https://stackoverflow.com/questions/563406/add-days-to-javascript-date */
-      if(date == undefined){
-         date = new Date();
-      }
-      var result = new Date(date);
-      result.setDate(result.getDate() + days);
-      return result;
-   }
-
    /**
     * Returns week of the month starting with 0
-    * @todo rewrite this as not a Date method */
+    * @later rewrite this as not a Date method and check that it works */
    Date.prototype.getWeekOfMonth = function () {
       let dayOfMonth = this.getDay();
       let month = this.getMonth();
@@ -846,7 +911,6 @@ const alacrity = function(){
   /**
    * Note that the harmonic frequencies are just multiples, so to find a note that sounds good with another just multiply it by 2, 3, 4...N
    * This is an easier and more accurate way of building a palette of truly harmonic notes than using western style notes as given by this formula
-  * @todo add unit test
   * @param {string} noteString - a string consisting of a capital letter A-G and a number for the octave, plus #, b or ♭ to indicate a flat or sharp
   * @param {integer|float} [a4=440] - a frequency in Hertz between 400 and 500 to use as A4
   * Possible Values:
@@ -879,14 +943,24 @@ const alacrity = function(){
         return startA * Math.pow(2, nn/12);
         /* alternative: startA * Math.pow(1.059463094359, nn); */
       }
-    unitTests.push(["getFreqFromNote()",
-      [Math.floor(getFreqFromNote("B#3")), 261]
-    ]);
+  unitTests.push(["getFreqFromNote()",
+    [Math.floor(getFreqFromNote("B#3")), 261]
+  ]);
 
 /* MISC */
+  /**
+   * @returns {number} the edit distance, minimum number of single-character edits (insertions, deletions or substitutions) required to change string a into string b
+   * {@link https://gist.github.com/andrei-m/982927 source}
+   */
   function levenshteinDistance(a, b){
-    if(a.length == 0) return b.length;
-    if(b.length == 0) return a.length;
+    /*
+    Copyright (c) 2011 Andrei Mackenzie
+    Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+    The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+    */
+    if (a.length === 0) return b.length;
+    if (b.length === 0) return a.length;
 
     var matrix = [];
 
@@ -908,69 +982,69 @@ const alacrity = function(){
         if(b.charAt(i-1) == a.charAt(j-1)){
           matrix[i][j] = matrix[i-1][j-1];
         } else {
-          matrix[i][j] = Math.min(matrix[i-1][j-1] + 1, // substitution
-                                  Math.min(matrix[i][j-1] + 1, // insertion
-                                           matrix[i-1][j] + 1)); // deletion
+          matrix[i][j] = Math.min(matrix[i-1][j-1] + 1, /* substitution */
+                         Math.min(matrix[i][j-1] + 1, /* insertion */
+                         matrix[i-1][j] + 1)); /* deletion */
         }
       }
     }
-
     return matrix[b.length][a.length];
   }
-    unitTests.push(["levenshteinDistance()",
-      [levenshteinDistance("alacadabra","aardvark"), 6],
-      [levenshteinDistance("Toby","toby"), 1],
-      [levenshteinDistance("toby","toby"), 0]
-    ]);
+  unitTests.push(["levenshteinDistance()",
+    [levenshteinDistance("alacadabra","aardvark"), 6],
+    [levenshteinDistance("Toby","toby"), 1],
+    [levenshteinDistance("toby","toby"), 0]
+  ]);
 
-/* TESTS and diagnostics */
   /**
-  * Quick, simple unit testing function.
-  * @version 1.2, as of Dec 12, 2020
-  * @param {*} actualResult - The actual output, to be tested for equality.
-  * @param {*} expectedResult - The expected output to be tested against.
-  * @param {string} [testName] - The name of the test (providing a name returns a readout instead of a boolean value).
-  * @param {boolean} [suppressLog=false] - Truthy values suppress logging for false tests.
-  * @returns {boolean|string} - If given a testName returns a detailed test result readout, else returns a boolean value representing whether the test passed.
-  */
-  function test(testName, actualResult, expectedResult, suppressLog) {
-    /* convert to strings so object comparisons work well */
-    actualResult = JSON.stringify(actualResult);
-    expectedResult = JSON.stringify(expectedResult);
+   * Checks edit distance but gives up if the distance is higher than the maximum value.
+   * {@link https://en.wikipedia.org/wiki/Levenshtein_automaton more info}
+   * {@link https://julesjacobs.com/2015/06/17/disqus-levenshtein-simple-and-fast.html implementation of this (in Python)}
+   */
+  function cappedLevenshtein(a, b, max){
+    /*
+    Copyright (c) 2011 Andrei Mackenzie
+    Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+    The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+    */
+    if (a.length === 0) return Math.max(b.length, max);
+    if (b.length === 0) return Math.max(a.length, max);
 
-    let result = (actualResult === expectedResult);
+    var matrix = [];
 
-    let readout = `${result} ${testName}` +
-    `\n\nActual result: ${actualResult}` +
-    `\n\nExpected result: ${expectedResult}\n`;
-
-    if (!suppressLog){
-      /* Any time a test fails, log it unless logs are supressed. */
-      log(readout);
+    /* Increment along the first column of each row */
+    var i;
+    for(i = 0; i <= b.length; i++){
+      matrix[i] = [i];
     }
-    if (result){
-      return result;
-    } else {
-      return readout;
+
+    /* Increment each column in the first row. */
+    var j;
+    for(j = 0; j <= a.length; j++){
+      matrix[0][j] = j;
     }
+
+    /* Fill in the rest of the matrix. */
+    for(i = 1; i <= b.length; i++){
+      for(j = 1; j <= a.length; j++){
+        if(b.charAt(i-1) == a.charAt(j-1)){
+          matrix[i][j] = matrix[i-1][j-1];
+        } else {
+          matrix[i][j] = Math.min(matrix[i-1][j-1] + 1, /* substitution */
+                         Math.min(matrix[i][j-1] + 1, /* insertion */
+                         matrix[i-1][j] + 1)); /* deletion */
+        }
+      }
+      // insert check against max here?
+    }
+    return matrix[b.length][a.length];
   }
-    unitTests.push(["test()",
-      [test("True Test", 1, 1, 1), true],
-      [test("False Test", 1, 0, 1), "false False Test\n\nActual result: 1\n\nExpected result: 0\n"]
-    ]);
-    function tests(name, ...testArrays){
-      let runTest = (a, i) => {
-        return `${name} Test ${i + 1}: ` + test("", a[0], a[1], 1);
-      };
-      let results = testArrays.map(runTest).join('\n');
-      return results;
-    }
-    function runUnitTests(){
-      let testResults = unitTests.map(a => tests(...a));
-      log("Unit Test Results:\n-------------------------\n" + testResults.join('\n'));
-   }
+  unitTests.push(["cappedLevenshtein()",
+    [cappedLevenshtein("alacadabra","aardvark", 5), 5],
+  ]);
 
-/* Reveal functions and set aliases visible to outside scopes. */
+  /* Reveal functions and set aliases visible to outside scopes. */
   return {
   /* GENERAL */
     typeCheck: typeCheck,
@@ -987,6 +1061,7 @@ const alacrity = function(){
     sensibleSort: sensibleSort,
     sortMap: sortMap,
   /* HTML */
+    $html: $html,
     addHtml: addHtml,
     print: printMe,
     makeElement: makeElement,
@@ -1011,7 +1086,6 @@ const alacrity = function(){
     arc: getSvgArcElement,
   /* misc */
     hzFromNote: getFreqFromNote,
-    addDays: addDays,
     lev: levenshteinDistance,
     saveFile: saveTextAsFile,
     hasLocal: hasLocal,

@@ -1,3 +1,17 @@
+
+
+/* Archived on Dec 17, 2020; luxon.js does this */
+  function addDays(days, date) {
+      /* see https://stackoverflow.com/questions/563406/add-days-to-javascript-date */
+      if(date == undefined){
+         date = new Date();
+      }
+      var result = new Date(date);
+      result.setDate(result.getDate() + days);
+      return result;
+   }
+
+
 // backed up from codepen on 11/30/2020
 
 {
