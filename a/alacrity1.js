@@ -255,7 +255,9 @@ const alacrity = function(){
    * Transposes a multidimensional array; using twice will return to original array.
    * {@link https://stackoverflow.com/questions/17428587/transposing-a-2d-array-in-javascript source}
    */
-  function transpose(m){ return m[0].map((x, i) => m.map(x => x[i])); }
+  function transpose(m){
+    return m[0].map((x, i) => m.map(x => x[i]));
+  }
 
   /** Applies a given function to reduce all the arrays within a multidimensional array. */
   function mapReduce(reduceWith, mArr) {
@@ -397,6 +399,22 @@ const alacrity = function(){
       htmlString += "/>";
     }
     return htmlString;
+  }
+
+  /**
+   * @source {@link https://gist.github.com/mathiasbynens/428626 | source}
+   */
+  function changeFavicon(src) {
+   let head = document.head = document.head || document.getElementsByTagName('head')[0];
+   var link = document.createElement('link'),
+       oldLink = document.getElementById('dynamic-favicon');
+     link.id = 'dynamic-favicon';
+     link.rel = 'shortcut icon';
+     link.href = src;
+     if (oldLink) {
+      head.removeChild(oldLink);
+     }
+     head.appendChild(link);
   }
 
   /** Returns a neatly formatted string given any input. */
@@ -1071,6 +1089,7 @@ const alacrity = function(){
     getPageHeight: getPageHeight,
     getBodyWidth: getBodyWidth,
     getBodyHeight: getBodyHeight,
+    favicon: changeFavicon,
   /* MATH */
     fix: fix,
     lerp: lerp,
