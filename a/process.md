@@ -5,6 +5,8 @@
   - a lot of the svg functions were made with positive-y-is-up in mind, so they may have odd behavior (but after a quick review they should work fine as long as I remember circles will 'start' at the bottom
 
 ## Recent Changes
+  Dec 28, 2020
+    - added changeFavicon()
   Dec 17, 2020
     - removed getFuncName()
     - added typeCheck() and subordinate functions
