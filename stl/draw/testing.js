@@ -1,3 +1,8 @@
+/* jshint esversion: 6 */
+/* jshint undef: true, unused: false */
+/* globals document, lekoLineDict, alert, console, makeElement */
+/* globals componentsDict, makeSimplePath */
+
 function runTest(rawTestResult, rawExpectedResult, funcName, alertFlag) {
   // convert to strings and compare (so multi-layered arrays and objects behave nicely)
   let testResult = JSON.stringify(rawTestResult);
@@ -15,7 +20,7 @@ function runTest(rawTestResult, rawExpectedResult, funcName, alertFlag) {
 function runAllTests(functionsList) {
   let numTests = functionsList.length;
   let successNum = 0;
-  for (testNum = 0; testNum < numTests; testNum++){
+  for (let testNum = 0; testNum < numTests; testNum++){
     let thisFunc = functionsList[testNum];
     try {
       console.log("Running test " + testNum + ": " + thisFunc.name + "()");
@@ -70,5 +75,5 @@ let testList = [
   testMakeSimplePath,
   testOffsetCoordArray,
   testOffsetPoints,
-  
+
 ];

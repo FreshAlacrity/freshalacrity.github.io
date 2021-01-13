@@ -1,6 +1,6 @@
+/* jshint esversion: 6 */
 /*
 sitelen telo font: https://www.reddit.com/r/tokipona/comments/jax1x2/sitelen_telo_v101_a_japaneseinspired_logographic/
-
 sitelen telo leko by akesi kon Nalasuni
 
 source code pro font from Google Fonts: https://fonts.google.com/specimen/Source+Code+Pro
@@ -200,7 +200,8 @@ var lekoDict = {
 "(": ["0000111","0000100","0011100","0010000","0011100","0000100","0000111"],
 ")": ["1110000","0010000","0011100","0000100","0011100","0010000","1110000"],
 "_": ["1111111","0000000","1111111","0000000","1111111","0000000","1111111"],
-}
+};
+
 function drawLeko(word){
   if (lekoDict[word]){
     let canvasHtml = '<svg class="leko-char" viewBox="0 0 70 70">';

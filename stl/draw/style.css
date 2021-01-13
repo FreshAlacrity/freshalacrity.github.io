@@ -8,7 +8,14 @@ body, textarea {
    background: #121212;
 }
 #container {
+   display: flex;
+   flex-flow: row wrap;
+   justify-content: space-evenly;
+   align-items: center;
    margin: 5%;
+}
+#container > * {
+
 }
 div {
    background: hsla(0, 0%, 0%, 20%);
@@ -24,10 +31,12 @@ input {
  width: 30%;
 }
 textarea {
-   line-height: 1.3em;
-}
-button {
-
+  padding: 0;
+  margin: 0;
+  display: block;
+  border: none;
+  font-size: 70%;
+  line-height: 1.3em;
 }
 button.small {
    font-size: .6em;
@@ -43,6 +52,25 @@ button.small {
    height: 1em;
 }
 svg {
+   padding: 0;
+   margin: 0;
    border: 1px solid white;
    height: 1em;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: .3em;
+}
+/* Track */
+::-webkit-scrollbar-track, ::-webkit-scrollbar-corner {
+  background: #00000000;
+}
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: grey;
+}
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: white;
 }

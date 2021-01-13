@@ -7,6 +7,7 @@
 ## Recent Changes
   Dec 28, 2020
     - added changeFavicon()
+    - added dictReplace()
   Dec 17, 2020
     - removed getFuncName()
     - added typeCheck() and subordinate functions

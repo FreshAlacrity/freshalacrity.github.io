@@ -20,7 +20,6 @@ function makeElement(elementTemplateObject) {
     let name = allKeys[aspect];
     if (name.charAt(0) == "_"){
       if (name == "_contents"){
-        /* later if this is an object, run recursively? */
         contents += elementTemplateObject[name];
       }
     } else {

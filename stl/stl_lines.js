@@ -1,8 +1,9 @@
 /* jshint esversion: 6 */
-/* jshint undef: true, unused: false */
-/* globals makeElement */
+/*
+sitelen telo font: https://www.reddit.com/r/tokipona/comments/jax1x2/sitelen_telo_v101_a_japaneseinspired_logographic/
+sitelen telo leko by akesi kon Nalasuni
+*/
 
-// = SETUP/DICTIONARIES =
 var lekoLineDict = {
 "a":[[[62.5,12.5],[62.5,37.5]],[[37.5,62.5],[62.5,62.5]],[[37.5,87.5],[62.5,87.5]]],
 "akesi":[[[12.5,37.5],[87.5,37.5],[87.5,87.5],[12.5,87.5]],[[37.5,12.5],[37.5,62.5]],[[62.5,12.5],[62.5,62.5]]],
@@ -219,57 +220,4 @@ var lekoLineDict = {
 "7-":[[[12.5,12.5],[37.5,12.5],[37.5,62.5]],[[12.5,87.5],[37.5,87.5]]],
 "8-":[[[37.5,37.5],[37.5,12.5],[12.5,12.5],[12.5,37.5],[37.5,37.5],[37.5,62.5],[12.5,62.5],[12.5,37.5]],[[12.5,87.5],[37.5,87.5]]],
 "9-":[[[37.5,37.5],[12.5,37.5],[12.5,12.5],[37.5,12.5],[37.5,62.5]],[[12.5,87.5],[37.5,87.5]]]
-};
-
-const possibleValues = {
-  // grouped by element
-  // svg default listed first
-  // todo actually use this
-  stroke: {
-    "stroke-linecap":["butt","round","square"],
-    "stroke-linejoin":["miter","round","bevel","miter-clip","arcs"], //arcs defaults to miter if there aren't arcs
-    "marker-start":["url(#start-symbol)"], //current personal convention, may change
-    "marker-end":["url(#end-symbol)"], //current personal convention, may change
-    "marker-mid":["url(#mid-symbol)"], //current personal convention, may change
-  },
-  svg: {
-    role: ["img","figure"], // see https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles
-
-  }
-};
-const componentsDict = {
-  start_triangle: function(){ return {
-      _element:"marker",
-      id:"start-symbol",
-      viewBox:"0 0 10 10",
-      refX:"4", refY:"5",
-      markerUnits:"strokeWidth",
-      markerWidth:"2",
-      markerHeight:"2",
-      orient:"auto",
-      _contents:makeElement({_element:"path",d:"M 0 0 L 10 5 L 0 10 z",fill:"black"}),
-    }},
-  mid_circle:     function(){ return {
-      _element:"marker",
-      id:"mid-symbol",
-      viewBox:"0 0 10 10",
-      refX:"5", refY:"5",
-      markerUnits:"strokeWidth",
-      markerWidth:"2",
-      markerHeight:"2",
-      orient:"auto",
-      _contents:makeElement({_element:"circle",cx:"5",cy:"5",r:"1",fill:"black"}),
-    }},
-  end_circle:     function(){ return {
-      _element:"marker",
-      id:"end-symbol",
-      viewBox:"0 0 10 10",
-      refX:"5", refY:"5",
-      markerUnits:"strokeWidth",
-      markerWidth:"2",
-      markerHeight:"2",
-      orient:"auto",
-      _contents:makeElement({_element:"circle",cx:"5",cy:"5",r:"2",fill:"black"}),
-    }},
-  // todo make an assembler for different symbols in different positions?
 };

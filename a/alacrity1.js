@@ -1,4 +1,4 @@
-/* last updated Dec 17, 2020 */
+/* last updated Dec 29, 2020 */
 /* jshint esversion: 6 */
 /* jshint undef: true, unused: true */
 /* globals document, window, console, alert, sessionStorage, localStorage */
@@ -466,6 +466,11 @@ const alacrity = function(){
      return input;
   }
 
+  function dictReplace(string, dictionary){
+    let regex = RegExp(Object.keys(dictionary).join("|"),"gi");
+    return string.replace(regex, k => dictionary[k]);
+  }
+
 /* layout */
   function onWindowResize(functionName) {
   if (window.attachEvent) {
@@ -741,7 +746,8 @@ const alacrity = function(){
    */
   function findVectorMagnitude(vectorArray){
     typeCheck('array', vectorArray);
-    return Math.sqrt(vectorArray.map(a => a * a).reduce((a, b) => a + b));
+    return Math.hypot(...vectorArray);
+    //return Math.sqrt(vectorArray.map(a => a * a).reduce((a, b) => a + b));
   }
   unitTests.push(["Vector Operations",
     [findVectorMagnitude(normalizeVector([1,2,3])),1],
@@ -929,7 +935,7 @@ const alacrity = function(){
   /**
    * Note that the harmonic frequencies are just multiples, so to find a note that sounds good with another just multiply it by 2, 3, 4...N
    * This is an easier and more accurate way of building a palette of truly harmonic notes than using western style notes as given by this formula
-  * @param {string} noteString - a string consisting of a capital letter A-G and a number for the octave, plus #, b or ♭ to indicate a flat or sharp
+  * @param {string} noteString - a string consisting of a capital letter A-G plus an optional #, b or ♭ to indicate a flat or sharp and a number for the octave
   * @param {integer|float} [a4=440] - a frequency in Hertz between 400 and 500 to use as A4
   * Possible Values:
   *    Concert:     440 Hz
@@ -940,7 +946,7 @@ const alacrity = function(){
   *    Alternative: 432 Hz
   * @returns {float} frequency in Hertz
   */
-  function getFreqFromNote(noteString, a4) {
+  function getFreqFromNote(noteString, a4 = 440) {
     let arr = noteString.split("");
     let notes = { "C":9, "D":7, "E":5, "F":4, "G":2, "A":0, "B":-2 };
     let nn = notes[arr.shift().toUpperCase()];
@@ -948,19 +954,13 @@ const alacrity = function(){
     if (arr[0] == "#"                 ){ nn -= 1; arr.shift(); }
     let num = parseInt(arr.join(""));
     nn = ((num - 4) * 12) - nn;
-    let startA = 440;
-    if (a4 != undefined){
-      a4 = parseFloat(a4);
-      if (a4 > 400 && a4 < 500){
-        startA = a4;
-      } else {
-        log("getFreqFromNote received invalid frequency for a4: ", a4);
-      }
+    a4 = +a4;
+    if (a4 < 400 || a4 > 500){
+        log("getFreqFromNote received suspicious frequency for a4: ", a4);
     }
-
-        return startA * Math.pow(2, nn/12);
-        /* alternative: startA * Math.pow(1.059463094359, nn); */
-      }
+    return a4 * Math.pow(2, nn/12);
+    /* alternative: a4 * Math.pow(1.059463094359, nn); */
+  }
   unitTests.push(["getFreqFromNote()",
     [Math.floor(getFreqFromNote("B#3")), 261]
   ]);
@@ -1070,6 +1070,7 @@ const alacrity = function(){
     test: test,
     runUnitTests: runUnitTests,
     tidy: prettyPrint,
+    dictReplace: dictReplace,
     copy: copy,
     smoosh: smooshObjects,
     editValueAt: editValueAt,
@@ -1095,6 +1096,7 @@ const alacrity = function(){
     lerp: lerp,
     offsetTowards: offsetTowards,
     length: lengthFromPoints,
+    roundTo: roundToPlaces,
   /* vectors */
     pairwise: pairwise,
   /* angles, circles and trig */

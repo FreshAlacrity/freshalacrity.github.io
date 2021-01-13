@@ -1,6 +1,9 @@
 ﻿# STLeko
 
 ## Todo
+   * get seven-segment style numerals working (with a stylized underline)
+   * when forcing compatibility, use some basic substitution rules
+     * ex: m => n
    * get both _lekoLekoCaligraphyStyle_ and _simpleCaligraphyStyle_ working
       * add to style objects/defaults:
          * Space between characters

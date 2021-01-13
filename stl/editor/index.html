@@ -11,7 +11,7 @@
 <div>
   <div id="preview"></div>
   <div id="data">
-    <input type="text" id="fname" name="fname" value="telo"><button onclick='getSaved()' title="load character from word">Get</button><button onclick='saveAs()' title="save to local storage">Save</button> <button onclick='getSaved(-1)' style="float:right;" title="move to the previous character">Previous</button><button onclick='getSaved(1)' style="float:right;" title="move to the next character">Next</button><br><br>
+    <input type="text" id="fname" name="fname" value="telo"><button onclick='getSaved()' title="load character from word">Get</button><button onclick='saveAs()' title="save to local storage">Save</button><button onclick='clearStorageAndReload()' title="clear all the changes that have been made and reload from script document">Clear All Changes</button> <button onclick='getSaved(-1)' style="float:right;" title="move to the previous character">Previous</button><button onclick='getSaved(1)' style="float:right;" title="move to the next character">Next</button><br><br>
   <label for="pretty-points">Simple Points:</label><span id="pretty-error-msg" style="color:red;"></span><br>
   <div id="sort-order-buttons" style="margin:0;padding:0;"><button>V</button><br><button>V</button><br><button>V</button><br><button>V</button></div>
     <textarea id="pretty-points" name="pretty-array-of-points" rows="5" cols="34" onkeyup='updateFromPretty("pretty-points")'>
@@ -38,7 +38,8 @@
 </div>
 </div>
 
-<script src="./myScript.js"></script>
+<script src="../stl_lines.js"></script>
+<script src="./script.js"></script>
 
 </body>
 </html>
