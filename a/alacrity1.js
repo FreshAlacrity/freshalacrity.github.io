@@ -1131,6 +1131,7 @@ const alacrity = function(){
     getRandFrom: getRandomArrayElement,
     sensibleSort: sensibleSort,
     sortMap: sortMap,
+    transpose: transpose,
   /* HTML */
     $html: $html,
     addHtml: addHtml,
