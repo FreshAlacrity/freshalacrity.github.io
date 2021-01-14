@@ -180,7 +180,7 @@ const alacrity = function(){
     * @param {...object} overrideObjects - any number of objects to smoosh into the targetObject
     */
   function smooshObjects(targetObject, ...overrideObjects) {
-    typeCheck('object with any', targetObject, ...overrideObjects);
+    typeCheck('object', targetObject, ...overrideObjects);
     return Object.assign(copy(targetObject), ...overrideObjects);
     /* old version:
     let tempJSON = JSON.stringify(mainObject);
@@ -236,6 +236,58 @@ const alacrity = function(){
     [getRandomArrayElement([1]), 1],
     [getRandomArrayElement([0, 1, 2, 3]) in [5, 6, 7, 8], true]
   ]);
+
+  /** from https://github.com/gebrkn/bits/blob/master/range.js */
+  function* rangeMaker(a, b, step) {
+      switch (arguments.length) {
+          case 0:
+              return;
+          case 1:
+              b = Number(a);
+              a = 0;
+              step = 1;
+              break;
+          case 2:
+              a = Number(a);
+              b = Number(b);
+              step = a < b ? +1 : -1;
+              break;
+          case 3:
+              a = Number(a);
+              b = Number(b);
+              step = Number(step);
+              break;
+      }
+
+      if (Number.isNaN(a) || Number.isNaN(b) || Number.isNaN(step))
+          return;
+
+      if (a === b || !step)
+          return;
+
+      if (a < b) {
+          if (step < 0)
+              return;
+          while (a < b) {
+              yield a;
+              a += step;
+          }
+      }
+
+      if (a > b) {
+          if (step > 0)
+              return;
+          while (a > b) {
+              yield a;
+              a += step;
+          }
+      }
+  }
+
+  function range(...args) {
+    return [...rangeMaker(...args)];
+  }
+
 
   /** Uses the Fisher-Yates shuffle to shuffle an array (walk the array in the reverse order and swap each element with a random one before it)
    * {@link https://javascript.info/task/shuffle source}
@@ -1075,6 +1127,7 @@ const alacrity = function(){
     smoosh: smooshObjects,
     editValueAt: editValueAt,
     randBetween: randBetween,
+    range: range,
     shuffle: shuffle,
     getRandFrom: getRandomArrayElement,
     sensibleSort: sensibleSort,
