@@ -288,7 +288,6 @@ const alacrity = function(){
     return [...rangeMaker(...args)];
   }
 
-
   /** Uses the Fisher-Yates shuffle to shuffle an array (walk the array in the reverse order and swap each element with a random one before it)
    * {@link https://javascript.info/task/shuffle source}
    */
