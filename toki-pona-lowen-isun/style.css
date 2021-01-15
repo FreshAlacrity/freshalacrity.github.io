@@ -1,0 +1,10 @@
+body {
+  background: black;
+  color: white;
+  margin-bottom: 2rem;
+}
+span {
+  display: inline-block;
+  margin: 2rem;
+  margin-bottom: 0;
+}
