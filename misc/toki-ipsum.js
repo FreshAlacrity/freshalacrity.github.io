@@ -3,7 +3,7 @@
 /* globals $, alacrity, window, document */
 
 // later: add possibility of questions?
-function tokiIpsum(sentences = 50){
+function tokiIpsum(sentences = 50) {
   let contentWords = ["pan","pana","pali","palisa","anpa","ante","pipi","pini","pimeja","pilin","akesi","poki","pu","alasa","ali","nasa","nasin","nena","esun","nimi","soweli","noka","supa","suwi","suno","suli","ma","jan","mani","mama","jaki","insa","jelo","ijo","jo","monsi","moku","moli","mun","musi","ilo","open","kasi","kala","kalama","tenpo","kiwen","kili","ko","kon","tomo","oko","toki","olin","kute","kulupu","lawa","lape","laso","len","lete","lipu","lili","loje","lupa","luka"];
   let index = 0;
   const grab = alacrity.getRandFrom;
@@ -25,6 +25,3 @@ function tokiIpsum(sentences = 50){
   }
   return alacrity.range(1, sentences, 1).map(sentence).join(" ");
 }
-let text = tokiIpsum();
-$('test').innerHTML = text;
-$('telo-test').innerHTML = text;
