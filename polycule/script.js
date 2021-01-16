@@ -16,22 +16,8 @@ const suffix = '-node';
 let root     = "2123";
 let focus;
 var nodes = {
-  "1409": {
-    "label": "&",
-    "to": [],
-    "class": "bubble",
-  },
-  "1412": {
-    "label": "&",
-    "to": [],
-    "class": "bubble",
-  },
-  "2120": {
-    "label": "",
-    "to": [],
-    "class": "bubble",
-  },
   "2123": {
+    "coords": [ -0.5 * spacing, -4 ],
     "label": "",
     "to": [
       {
@@ -62,8 +48,22 @@ var nodes = {
         "2670": 1
       }
     ],
+    "class": "bubble"
+  },
+  "1409": {
+    "label": "&",
+    "to": [],
     "class": "bubble",
-    "coords": [ -20,0 ]
+  },
+  "1412": {
+    "label": "&",
+    "to": [],
+    "class": "bubble",
+  },
+  "2120": {
+    "label": "",
+    "to": [],
+    "class": "bubble",
   },
   "2125": {
     "label": "",
@@ -295,8 +295,8 @@ function labelFriend(text, x, y, size = 2) {
       });
 }
 function keyCode(){
-  let x = spacing * 1.4;
-  let y = -0.9;
+  let x = spacing * 1.72;
+  let y = -0.9 + nodes[root].coords[1] / 30;
   let htmlString = labelFriend("key", x, y * spacing, 4);
 
   y += 0.6;
