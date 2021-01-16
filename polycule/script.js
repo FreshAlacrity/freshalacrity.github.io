@@ -4,12 +4,12 @@
 
 // key: type 1 is no physical contact, type 2 is some and type 3 is intimate
 // pull out identifying information - have spreadsheet generate the anonymized data in the future?
-
+// shrink the graph on large screens? size relative to default em?
 // try color coding the bubbles with unique hues (how to make colorblind friendly?)
 
 const spacing    = 22;
 const bubbleSize = 4;
-const scaling    = 1.5;
+const scaling    = 1.6;
 const fontScale  = 1;
 const groupCode  = '&';
 const suffix = '-node';
@@ -294,12 +294,30 @@ function labelFriend(text, x, y, size = 2) {
         _contents: text
       });
 }
+function lineSample(x, y, classes){
+  let start = [x - 5, y];
+  let end =   [x + 5, y];
+  let html = line(start, end, classes);
+  html += nodeString(["key",{
+    coords:[x - 5, y],
+    size: 0.3,
+    class: 'bubble key-node',
+    label: ''
+  }]);
+  html += nodeString(["key",{
+    coords:[x + 5, y],
+    size: 0.3,
+    class: 'bubble key-node',
+    label: ''
+  }]);
+  return html;
+}
 function keyCode(){
   let x = spacing * 1.72;
-  let y = -0.9 + nodes[root].coords[1] / 30;
+  let y = -1.25;
   let htmlString = labelFriend("key", x, y * spacing, 4);
 
-  y += 0.6;
+  y += 0.55;
   htmlString += nodeString(["key",{
     coords:[x, y * spacing],
     size: 3,
@@ -308,21 +326,21 @@ function keyCode(){
   }]);
   y += 0.27;
   htmlString += labelFriend("group", x, y * spacing);
-  y += 0.1;
+  y += 0.12;
   htmlString += labelFriend("/open", x, y * spacing);
 
-  y += 0.5;
-  htmlString += line([x - 5, y * spacing],[x + 5, y * spacing],'line-3');
+  y += 0.4;
+  htmlString += lineSample(x, y * spacing, 'line-3');
   y += 0.15;
   htmlString += labelFriend("irl sex", x, y * spacing);
-  //y += 0.35;
-  //htmlString += line([x - 5, y * spacing],[x + 5, y * spacing],'line-2');
-  //y += 0.15;
-  //htmlString += labelFriend("some touching", x, y * spacing);
   y += 0.35;
-  htmlString += line([x - 5, y * spacing],[x + 5, y * spacing],'line-1');
+  htmlString += lineSample(x, y * spacing,'line-2');
   y += 0.15;
-  htmlString += labelFriend("no irl sex", x, y * spacing);
+  htmlString += labelFriend("irl snugs", x, y * spacing);
+  y += 0.35;
+  htmlString += lineSample(x, y * spacing,'line-1');
+  y += 0.15;
+  htmlString += labelFriend("no irl", x, y * spacing);
   return htmlString;
 }
 function draw(obj){
