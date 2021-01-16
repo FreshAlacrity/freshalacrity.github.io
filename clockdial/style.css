@@ -1,0 +1,20 @@
+body{
+  background: hsl(220,30%,20%);
+  font-family: 'Source Code Pro';
+}
+svg {
+  background:hsl(210,70%,20%);
+  fill: none;
+  stroke-width: .5;
+  stroke:hsla(210,0%,100%,1);
+}
+.hide {
+  stroke: none !important;
+  fill: none !important;
+  display: none;
+}
+text {
+  fill: white;
+  stroke: none;
+  font-size: 9px;
+}

@@ -1,34 +1,34 @@
 /* jshint esversion: 6 */
 /* jshint undef: true */
-/* globals alacrity, luxon, window, document, $, setInterval, setTimeout */
-/* globals alert */
+/* globals alacrity, alert, window, document, $, setInterval, setTimeout */
 /*
-- text that follows polygon, with the number of strings dictating the sides of the polygon (and then figure out how to nest them into a function that makes text contained in polygons)
-- import all the wheel of the year data and functions
+- figure out why tooltip text isn't resizing
+- add the ability to include text in redirecting bracings
+
+
 - get all those working together neatly and taking an array of bound functions to draw consecutive patterns
 - go all the way from the year wheel to two-minute and three-minute timers with little progress circles
-
 
 - radial STL
 - titles/tooltips/hover text
 */
-let a = alacrity;
-let DateTime = luxon.DateTime;
+
 let months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+let weekdays = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
 var targetSvg = "test";
 
-function mid(pt1, pt2){
+function mid(pt1, pt2) {
   return alacrity.lerp(pt1, pt2, 0.5);
 }
-function parts(num){
+function parts(num) {
   return alacrity.range(num).map(a => a / num);
 }
 
-function make(...args){
+function make(...args) {
   return alacrity.makeElement(alacrity.smoosh(...args));
 }
 /* Reference
-- arcs: rx ry x-axis-rotation large-arc-flag sweep-flag x y
+- rotation is generally applied after translation, but layering this allows rotation that doesn't change position (where does this come from?)
 - hue: range of 0 to 360 - 0: red, 120: green, 240: blue, 50: gold
 */ // refs
 
@@ -74,7 +74,6 @@ function radialMarks(center = [0,0], r = 40, num = 12, length = 5) {
     _innerRadius: (r - length)
   };
 }
-
 
 function simpleArcSegment(coords1, coords2, r, arcFlag = 0) {
   // have this support arc-to?
@@ -136,7 +135,7 @@ function circle(center, r) {
 }
 function polygon(center, r, numPoints, offset, obj) {
   if (numPoints <= 1){ return circle(center, r); }
-  let points = dialPoints(center, r, numPoints, offset);
+  let points = dialPoints(center, r, numPoints, offset).reverse();
   let innerR = alacrity.length(center, mid(points[0], points[1]));
   return alacrity.smoosh(obj, {
     _element:'path',
@@ -195,11 +194,11 @@ function petal(center = [0,0], r = 42, a = 0.5, step = 0.05, l = 10, flip = fals
     d: `M ${b1} Q ${q1} ${m1} Q ${q2} ${tip} Q ${q2} ${m2} Q ${q4} ${b2} A ${r} ${r} 1 0 1 ${b1} Z`,
   };
 }
-function petals(center = [0,0], r = 40, num = 12, l = 5, flip = false, obj = {}) {
+function petals(center = [0,0], r = 40, num = 12, l = 5, offset = 0, flip = false, obj = {}) {
   let ir = r - l;
   if (flip) { r = ir; l = l * -1; }
   let tips = parts(num);
-  tips = tips.map(a => petal(center, r, a, 0.5 / num, l));
+  tips = tips.map(a => petal(center, r, a + offset, 0.5 / num, l));
   tips = tips.map(a => make(a, obj)).join("");
   return {
     _element:'g',
@@ -208,11 +207,9 @@ function petals(center = [0,0], r = 40, num = 12, l = 5, flip = false, obj = {})
   };
 }
 
-
-
 // todo make this possible to place at any angle/make radial labelled segments
 function makeText(num){
-  return alacrity.range(num).map(a => "Hello World!");
+  return alacrity.range(num).map(a => "hello world!");
 }
 function simpleText(coords, size = 3, text = makeText(3).join(" ")){
   return {
@@ -226,9 +223,23 @@ function simpleText(coords, size = 3, text = makeText(3).join(" ")){
   };
 }
 function tooltip(coords, foo, text){
+  // see https://svgwg.org/svg2-draft/text.html#TermContentArea for wrapping text inside a rectangle
+  // https://stackoverflow.com/questions/41768657/display-text-over-svg-element-on-hover
+  let bg = {
+    _element: 'rect',
+    x: coords[0] - 7.5,
+    y: coords[1] - 5,
+    rx: 1,
+    ry: 1,
+    width: 15,
+    height: 10,
+    fill: 'black',
+  };
+  let txt = simpleText(coords, 1, text);
+
   return {
     _element: 'g',
-    _contents: alacrity.makeElement(simpleText(coords, 2, text)),
+    _contents: [bg, txt].map(alacrity.makeElement).join(''),
   };
 }
 function textPath(pathId, text, size, offset = 0){
@@ -245,7 +256,7 @@ function textPath(pathId, text, size, offset = 0){
     _contents: text
   };
 }
-function circleText(center, r, text = makeText(8), l = 3, offset = 0, obj = {}) {
+function circleText(center, r, text = months, l = 3, offset = 0, obj = {}) {
   let step = 1 / text.length;
   offset += 0.5 + (1 - (text.length % 2)) * 0.5 * step;
   let pathId = `text-path-${center}-${r}`;
@@ -273,20 +284,62 @@ function circleText(center, r, text = makeText(8), l = 3, offset = 0, obj = {}) 
     _innerRadius: r - l
   };
 }
+function polygonTextLined(center, r, text = weekdays, l = 3, offset = 0, obj = {}){
+  let pad1 = (Math.pow(1/3, text.length) * 60)-0.2; //3 * x = 1.5, 5 * x = 0
+  let pad2 = pad1;
+  if (text.join('').search(/[gjqpy]/) < 0){
+    //todo make a flag to turn this on/off? might mess up sitelen telo etc
+    pad2 -= l * 0.1;
+  }
+  if (typeof text === 'string'){ text = [text]; }
+  let inner = polygon(center, r - (l + pad2)*2, text.length, offset, obj);
+  return {
+    _element: 'g',
+    _contents: [
+      polygon(center, r, text.length, offset, obj),
+      polygonText(center, r - l - pad1, text, l, offset, obj),
+      inner
+    ].map(alacrity.makeElement).join(''),
+    _innerRadius: inner._innerRadius
+  };
+}
+function polygonText(center, r, text = makeText(3), l = 3, offset = 0, obj = {}) {
+  let step = 1 / text.length;
+  offset += 0.5 + (1 - (text.length % 2)) * 0.5 * step;
+  let pathId = `text-path-${center}-${r}`;
+  if (typeof text === 'string'){ text = [text]; }
+  let svgElements = "";
+  svgElements += '<defs>';
+  let path = polygon(center, r, text.length, offset, obj);
+  path.id = pathId;
+  svgElements += alacrity.makeElement(path);
+  svgElements += '</defs>';
+  svgElements += '<text>';
+  svgElements += text.map((a, i) =>
+    make(textPath(pathId, a, l, offset + ((i) * step)), obj)
+  ).join('');
+  svgElements += '</text>';
+  return {
+    _element: 'g',
+    transform: `rotate(${step * -180} ${center.join(" ")})`,
+    _contents: svgElements,
+    _innerRadius: path._innerRadius
+  };
+}
 
 let sample = [
   "",{
     function: petals,
-    args: [12, 5, false, {fill: 'white', 'stroke-width': 0}]
+    args: [12, 5, 0, false, {fill: 'white', 'stroke-width': 0}]
   },{ function: circle },{
     function: circleText,
     adjust: 1
   },{ function: circle, adjust: 1 },{
     function: petals,
-    args: [12, 5, true, {fill: 'white', 'stroke-width': 0}]
+    args: [12, 5, 0, true, {fill: 'white', 'stroke-width': 0}]
   },{ function: circle, adjust: 1 },{
-    function: star,
-    args: [11, 2, 0, {'stroke-linejoin':'bevel'}],
+    function: polygonTextLined,
+    //args: [11, 2, 0, {'stroke-linejoin':'bevel'}],
   },{ function: circle },{
     function: radialMarks,
     args: [],
@@ -302,11 +355,11 @@ let sample = [
   },{ function: circle },{
     function: simpleText,
     args: ["x"]
-  },{
+  }/*,{
     function: tooltip
-  }
+  }*/
 ];
-function nested(list = sample, r = 40, padding = 0, center = [0,0]){
+function nested(list = sample, r = 45, padding = 0, center = [0,0]){
   let nestWithin = (string, obj) => {
     obj = alacrity.smoosh({args:[], adjust: 0}, obj);
     let fren = obj.function(center, r - obj.adjust, ...obj.args);
@@ -315,7 +368,3 @@ function nested(list = sample, r = 40, padding = 0, center = [0,0]){
   };
   return list.reduce(nestWithin);
 }
-
-//testString += alacrity.log(redirectingBracings([0,0],tempRadius));
-$("test").innerHTML = nested();
-// rotation is generally applied after translation, but layering this allows rotation that doesn't change position

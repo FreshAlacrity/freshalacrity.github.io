@@ -1,0 +1,46 @@
+/*
+- try making a 'glint' effect on hover?
+
+*/
+
+body {
+  background: black;
+  color: white;
+  font-family: "Source Code Pro", 'Gintronic', 'DejaVu Sans Mono', monospace;
+  font-weight: bold;
+}
+text {
+  fill: currentColor;
+  stroke-width: 0;
+}
+path {
+  stroke: white;
+  stroke-width: 0.6;
+}
+circle.bubble {
+  fill: white;
+  stroke: white;
+  stroke-width: .6;
+}
+.focused > circle {
+  fill: hsl(200, 100%, 50%);
+  stroke-width: 0.6;
+}
+.bubble {
+  color: black;
+}
+.center {
+}
+.inner {
+}
+g.outer {
+}
+.group > circle {
+  //stroke-dasharray: 1;
+}
+.line-1 {
+  stroke-dasharray: 1 1.5;
+}
+.line-2 {
+  stroke-dasharray: 1 0.5;
+}

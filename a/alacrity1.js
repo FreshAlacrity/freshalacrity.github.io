@@ -9,7 +9,6 @@
 /* Common shortcuts: */
 function $(x) { return document.getElementById(x); }
 
-
 const alacrity = function(){
 
 /* TESTING */
