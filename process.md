@@ -1,14 +1,17 @@
 # FreshAlacrity on Github
 
 ## To Do
+   - support multiple fonts and languages (inc. Open Dyslexic) and toki pona
+   - add navigation tabs for project folders
+     - with colorful bottom border for selected tab
    - upload large/complex codepens
-   - add row of tab/links in header block with colorful bottom border for selected tab
-   - work on developing a personal style for things like buttons, inputs, dropdown menus
+   - start a flex layout where paragraphs display as blocks
+   - work on developing a personal css style for things like buttons, inputs, dropdown menus
      - generally Material inspired
      - use color palette from One Dark?
        - take into Gravit and mess around with it a bit
 
-## Recent Changes
+## Major Changes
   Dec 13, 2020
     - updated CSS to a simple Material inspired design
   Dec 11, 2020

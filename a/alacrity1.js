@@ -420,7 +420,25 @@ const alacrity = function(){
     element.innerHTML = element.innerHTML + htmlString;
   }
 
-  /** given an object with _element name and various properties, assemble and return HTML string */
+  /* sets the attributes of a DOM object */
+  function setAttributes(element, object) {
+    Object.keys(object).forEach(key => {
+      if (key[0] !== "_"){
+        element.setAttribute(key, object[key]);
+      }
+    });
+    return element;
+  }
+
+  /** given an object with _element name and various properties, assemble and return a DOM object */
+  function newElementNode(type, contents, object) {
+    let newElement = document.createElement(type);
+    if (contents){ newElement.innerHTML = contents; }
+    if (object){ setAttributes(newElement, object); }
+    return newElement;
+  }
+
+  /** given an object with _element name and various properties, assemble and return HTML string - use newElementNode instead where possible */
   function makeElement(elementTemplateObject) {
     let elementType = elementTemplateObject._element;
     if (!elementType){
@@ -1136,6 +1154,8 @@ const alacrity = function(){
     addHtml: addHtml,
     print: printMe,
     makeElement: makeElement,
+    setAttributes: setAttributes,
+    newElementNode: newElementNode,
     onWindowResize: onWindowResize,
     stopOnWindowResize: stopOnWindowResize,
     getPageWidth: getPageWidth,
