@@ -1,11 +1,11 @@
 body {
-  background: hsl(220,30%,20%);
+  background: #303842;
   font-family: 'Source Code Pro';
   color: white;
 }
 svg {
   position: absolute;
-  background: hsl(210,70%,20%);
+  background: #303842;
   top: 0;
   left: 0;
   fill: none;
