@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Pomodoro Timer 1.2</title>
+  <style>
+    html {
+      background-color: #303842;
+      color: white;
+      font-family: "Fira Mono", Arial, Helvetica, sans-serif;
+      font-weight: 1;
+    }
+
+    #timer-container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .centered-text {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column-reverse;
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+    }
+
+    #timer-container {
+      background-color: #303842;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      margin: 0;
+    }
+
+    #time-container, #title-container {
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      width: 50%;
+    }
+
+    #time-container {
+      opacity: 0.2;
+      font-size: 1.2em;
+    }
+
+    #title-container {
+      font-size: 0.2em;
+    }
+
+    .background-ring, .progress-ring {
+      fill: transparent;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-dasharray: 12em 12.56em;
+      stroke-dashoffset: 0em;
+      stroke-linecap: round;
+      transform-origin: 0 0;
+      transform: rotate(98deg);
+      animation-timing-function: linear;
+    }
+
+    .background-ring {
+      opacity: 0.2;
+    }
+    .run-animation {
+      animation: update 30s;
+    }
+
+    @keyframes update {
+      0%   {stroke-dashoffset: 12em;}
+      100% {stroke-dashoffset: 0em;}
+    }
+  </style>
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<div id="timer-container">
+  <svg viewBox="-50 -50 100 100" id="pomodoro-timer" class="progress" width="10em" height="10em" preserveAspectRatio="xMidYMid meet" onclick="timer()">
+    <circle id="timer-progress" class="progress-ring" r="2em" cx="0" cy="0" />
+    <circle class="background-ring" r="2em" cx="0" cy="0" />
+    <foreignObject x="-50" y="-50" width="100%" height="5.7em">
+      <div xmlns="http://www.w3.org/1999/xhtml" class="centered-text">
+        <div contenteditable="true" id="time-container">
+          25
+        </div>
+        <div contenteditable="true" id="title-container">
+        </div>
+      </div>
+    </foreignObject>
+  </svg>
+</div>
+<!-- partial -->
+<script src='https://freshalacrity.github.io/a/alacrity1.js'></script>
+<script>
+var audioCtx;
+var runningTimer;
+document.title = "Pomodoro Timer";
+
+function playMelody(notes, settings){
+  if (!audioCtx){
+    var AudioContext = window.AudioContext || window.webkitAudioContext;
+    audioCtx = new AudioContext();
+  }
+  let volume = 0.1;
+  let defaults = {
+    waveform: 'square', //also Sine Square Triangle Sawtooth
+    frequencies: [440, 550, 660, 770, 880],
+    tempo: 0.13,
+    attack: 0.01,
+    release: 0.01,
+    slide: 0.01,
+    sustain: 0.36,
+    gain: 0.1,
+    gap: 0.1
+  }
+  let s = Object.assign(defaults, settings);
+  let o = audioCtx.createOscillator();
+  let g = audioCtx.createGain();
+  o.connect(g);
+  o.frequency.value = defaults.frequencies[2];
+  o.type = s.waveform;
+  g.connect(audioCtx.destination);
+  g.gain.value = 0.00001;
+  o.start(audioCtx.currentTime);
+  
+  let startBoop = (index, pitch) => {
+    //console.log(`startBoop called with index: ${index} and pitch: ${pitch}`);
+    
+    let when = audioCtx.currentTime + (index + s.gap) * s.tempo;
+    //console.log(`shifting gain at time index: ${when} to volume: ${volume} and ramp: ${attack}`);
+    g.gain.setTargetAtTime(s.gain, when, s.attack);
+    
+    /* fade */
+    when = audioCtx.currentTime + (index + (s.attack * 2)) * s.tempo;
+    g.gain.setTargetAtTime(s.sustain, when, s.attack * 2);
+    
+    when = audioCtx.currentTime + (index * s.tempo);
+    //console.log(`shifting frequency at time index: ${when} to pitch: ${frequencies[pitch]}`);
+    o.frequency.setTargetAtTime(s.frequencies[pitch], when, 0.00001);
+  }
+  let slideTo = (index, pitch) => {
+    //console.log(`slideTo called with index: ${index} and pitch: ${pitch}`);
+    let when = audioCtx.currentTime + (index - s.slide) * s.tempo;
+    o.frequency.setTargetAtTime(s.frequencies[pitch], when, s.slide * 2);
+  }
+  let endBoop = (index) => {
+    //console.log(`endBoop called with index: ${index}`);
+    let when = audioCtx.currentTime + (index - s.gap) * s.tempo;
+    g.gain.setTargetAtTime(0.00001, when, s.release);
+  }
+  
+  let slideHere = false;
+  for (let index = 0; index < notes.length; index++){
+    let pitch = parseInt(notes.charAt(index)) - 1;
+    if (pitch in s.frequencies){ // if it's 1-5
+      if (slideHere){
+        slideTo(index, pitch);
+      } else {
+        startBoop(index, pitch);
+        slideHere = true;
+      }
+    } else {
+      slideHere = false;
+      endBoop(index)
+    }
+  }
+  endBoop(notes.length);
+  //o.stop(audioCtx.currentTime + (notes.length) * tempo);
+}
+
+
+function animate(durationInMinutes){
+  // thanks to https://css-tricks.com/restart-css-animation/
+  
+  // retrieve the element
+  let element = document.getElementById("timer-progress");
+
+  // remove the class
+  element.classList.remove("run-animation");
+  
+  // trigger reflow /* The actual magic */
+  void element.focus();
+  
+  // re-adding the class
+  element.classList.add("run-animation");
+  
+  // set animation duration
+  element.style.animationDuration = (durationInMinutes * 60) + "s";
+}
+
+function timer(){
+  document.getElementById("timer-container").style.backgroundColor = "inherit";
+  var d = parseFloat(document.getElementById("time-container").innerHTML);
+  if (!d || d < 0) {
+    alert("Whoops, that won't work - try entering a number of minutes.");
+    document.getElementById("time-container").innerHTML = "25";
+  }
+  if ($('title-container').innerText != ""){
+    document.title = $('title-container').innerText;
+  } else if (d != 25){
+    document.title = d + " Minute Timer";
+  } else {
+    document.title = "Pomodoro Timer";
+  }
+  
+  animate(d);
+  clearTimeout(runningTimer);
+  runningTimer = setTimeout(timerEnd, d * 60000);
+}
+
+function timerEnd(){
+  document.getElementById("timer-container").style.backgroundColor = "orange";
+  playMelody("33-33-3-2-1---332-444-5", {tempo: 0.11});
+  // beep melody code/tester/preview: https://codepen.io/WanderingEnby/pen/YzGYVvb
+}
+
+document.getElementById('time-container').addEventListener('keydown', (event) => {
+  // catch 'enter' and have it start the timer instead of making a new line
+  if (event.keyCode === 13) {
+    event.preventDefault();
+    timer();
+  }
+});
+
+document.getElementById('time-container').addEventListener('blur', (event) => {
+  timer();
+});
+
+document.getElementById('title-container').addEventListener('click', (event) => {
+  // keep clicks on the title area from re-starting the timer
+  event.stopPropagation();
+});
+                                                  
+document.getElementById('title-container').addEventListener('blur', (event) => {
+  // when the title is done being set, set the document title
+  document.title = $('title-container').innerText;
+});
+</script>
+</body>
+</html>
