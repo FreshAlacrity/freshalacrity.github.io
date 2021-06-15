@@ -1,6 +1,8 @@
-body {
+body, html {
   background: #303842;
   color: white;
+}
+html {
   margin-bottom: 2rem;
 }
 span {
