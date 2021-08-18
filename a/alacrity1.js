@@ -430,9 +430,17 @@ const alacrity = function(){
     return element;
   }
 
-  /** given an object with _element name and various properties, assemble and return a DOM object */
+  /** given an object with _element name and various properties, assemble and return a DOM object; will not work as expected to add inline SVG elements */
   function newElementNode(type, contents, object) {
     let newElement = document.createElement(type);
+    if (contents){ newElement.innerHTML = contents; }
+    if (object){ setAttributes(newElement, object); }
+    return newElement;
+  }
+
+  /** given an object with _element name and various properties, assemble and return an inline SVG object */
+  function newSvgElement(type, contents, object) {
+    let newElement = document.createElementNS("http://www.w3.org/2000/svg", type);
     if (contents){ newElement.innerHTML = contents; }
     if (object){ setAttributes(newElement, object); }
     return newElement;
