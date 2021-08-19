@@ -1169,6 +1169,7 @@ const alacrity = function(){
     offsetTowards: offsetTowards,
     length: lengthFromPoints,
     roundTo: roundToPlaces,
+    dist: distanceBetweenTwoPoints,
   /* vectors */
     pairwise: pairwise,
   /* angles, circles and trig */
