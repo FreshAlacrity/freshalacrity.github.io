@@ -438,14 +438,6 @@ const alacrity = function(){
     return newElement;
   }
 
-  /** given an object with _element name and various properties, assemble and return an inline SVG object */
-  function newSvgElement(type, contents, object) {
-    let newElement = document.createElementNS("http://www.w3.org/2000/svg", type);
-    if (contents){ newElement.innerHTML = contents; }
-    if (object){ setAttributes(newElement, object); }
-    return newElement;
-  }
-
   /** given an object with _element name and various properties, assemble and return HTML string - use newElementNode instead where possible */
   function makeElement(elementTemplateObject) {
     let elementType = elementTemplateObject._element;
