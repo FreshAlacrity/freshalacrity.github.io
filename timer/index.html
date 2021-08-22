@@ -3,12 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <title>Pomodoro Timer 1.2</title>
+  <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+  <link rel="manifest" href="../site.webmanifest">
   <style>
     html {
       background-color: #303842;
       color: white;
       font-family: "Fira Mono", Arial, Helvetica, sans-serif;
       font-weight: 1;
+    }
+
+    .text-field:hover {
+      border-radius: 2px;
+      box-sizing: border-box;
+      border: 1px solid white;
     }
 
     #timer-container {
@@ -18,7 +28,6 @@
       top: 0;
       left: 0;
     }
-
     .centered-text {
       display: flex;
       align-items: center;
@@ -71,7 +80,7 @@
       opacity: 0.2;
     }
     .run-animation {
-      animation: update 30s;
+    animation: update 30s;
     }
 
     @keyframes update {
@@ -83,7 +92,7 @@
 <body>
 <!-- partial:index.partial.html -->
 <div id="timer-container">
-  <svg viewBox="-50 -50 100 100" id="pomodoro-timer" class="progress" width="10em" height="10em" preserveAspectRatio="xMidYMid meet" onclick="timer()">
+  <svg viewBox="-50 -50 100 100" id="pomodoro-timer" class="progress" width="30%" height="95%" preserveAspectRatio="xMidYMid meet" onclick="timer()">
     <circle id="timer-progress" class="progress-ring" r="2em" cx="0" cy="0" />
     <circle class="background-ring" r="2em" cx="0" cy="0" />
     <foreignObject x="-50" y="-50" width="100%" height="5.7em">
