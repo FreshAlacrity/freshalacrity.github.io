@@ -22,6 +22,8 @@
 
 */
 
+/*  */
+
 const svg = (function () {
   /* Setup for runUnitTests() - @later figure out if we wanna even do that for this mini lib */
   // const unitTests = []
@@ -67,17 +69,24 @@ const svg = (function () {
   function parts (num) {
     return alacrity.range(num).map(a => a / num)
   }
-  // todo compare dialPoints and onCircle - they may be duplicates
+
   /**
-   * @param offset a decimal value to rotate each decimal value by
-   * @param {number} [center=[0, 0]]
-   * @returns {number[][]} nested array of points around a circle, given an array of decimal values
+   * @param offset - a decimal value to rotate each decimal value by
+   * @param {number[]} [center=[0, 0]]
+   * @returns {number[][]} - a nested array of points around a circle, given an array of decimal values
    */
-  function onCircle (decimalValues, radius, center = [0, 0], offset = 0) {
+  function toCirclePoints (decimalValues, radius = 1, center = [0, 0], offset = 0) {
     return decimalValues.map(a => alacrity.circPoint(center, radius, a + offset))
   }
-  function dialPoints (center = [0, 0], r = 1, num = 12, offset = 0) {
-    return parts(num).map(a => alacrity.circPoint(center, r, a + offset))
+  function dialPoints (center = [0, 0], radius = 1, num = 12, offset = 0) {
+    return toCirclePoints(parts(num), radius, center, offset)
+  }
+  /**
+   * @param stride - the number of points skipped by each line
+   */
+  function starPoints (num, stride, radius, center, offset = 0) {
+    const points = alacrity.range(num).map(a => a * (stride / num))
+    return toCirclePoints(points, radius, center, offset)
   }
 
   function circularPath (center, r, flipHorizontal = false, flipVertical = false) {
@@ -181,13 +190,6 @@ const svg = (function () {
     }
   }
 
-  /**
-   * @param stride - the number of points skipped by each line
-   */
-  function starPoints (num, stride, radius, center, offset = 0) {
-    const points = alacrity.range(num).map(a => a * (stride / num))
-    return onCircle(points, radius, center, offset)
-  }
   function polygon (center, r, numPoints, offset, obj) {
     if (numPoints <= 1) { return circle(center, r) }
     const points = dialPoints(center, r, numPoints, offset + 0.5).reverse()
@@ -444,6 +446,7 @@ const svg = (function () {
     petals: petals,
     radialMarks: radialMarks,
     dialPoints: dialPoints,
+    toCirclePoints: toCirclePoints,
     nestedCircles: nested,
     tooltip: tooltip,
     text: simpleText,
