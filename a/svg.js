@@ -100,17 +100,16 @@ const svg = (function () {
     return arcPoints
   }
   function line (points = [[0, 0], [100, 100]], dTail = '') {
-    const line = {
+    return {
       _element: 'path',
       d: 'M ' + points.join(' ') + dTail
     }
-    return make(line)
   }
   function radialMarks (center = [0, 0], r = 40, num = 12, length = 5, offset) {
     const pts = alacrity.transpose([dialPoints(center, r, num, offset), dialPoints(center, r - length, num, offset)])
     return {
       _element: 'g',
-      _contents: (pts.map(a => line(a)).join('')),
+      _contents: (pts.map(a => make(line(a))).join('')),
       _innerRadius: (r - length)
     }
   }
@@ -436,6 +435,7 @@ const svg = (function () {
     circle: circle,
     polygon: polygon,
     star: star,
+    onCircle: onCircle,
     circleText: circleText,
     polygonText: polygonText,
     polygonTextLined: polygonTextLined,
