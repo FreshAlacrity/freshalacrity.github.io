@@ -1,4 +1,4 @@
-/* requires alacrity.js - https://freshalacrity.github.io/a/alacrity2.js */
+/* requires alacrity library version 2 or above, see - https://freshalacrity.github.io/a/alacrity2.js */
 /* globals alacrity */
 /* last major change: refactor and consolidation on Sep 7, 2021 */
 /*
@@ -22,7 +22,7 @@
 
 */
 
-const svg = (function () {
+const svg = (function () { // eslint-disable-line no-unused-vars
   /* Setup for runUnitTests() - @later figure out if we wanna even do that for this mini lib */
   // const unitTests = []
 
@@ -30,7 +30,7 @@ const svg = (function () {
   const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
   function sayHello () {
-    alacrity.log('Alacrity SVG supplement library loaded')
+    alacrity.log('\'alacrity\' SVG supplemental library loaded for version: 2.1+')
   }
   function getSvgAttributes (element) {
     const obj = {}
@@ -450,5 +450,3 @@ const svg = (function () {
     hello: sayHello
   }
 }())
-
-svg.hello()

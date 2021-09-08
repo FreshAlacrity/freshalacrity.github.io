@@ -5,7 +5,10 @@
 /* Common shortcuts: */
 function $ (x) { return document.getElementById(x) }
 
-const alacrity = (function () {
+const alacrity = (function () { // eslint-disable-line no-unused-vars
+  function sayHello () {
+    log("'alacrity' library loaded - current version: 2.1")
+  }
   /* TESTING */
   /* Setup for runUnitTests() */
   const unitTests = []
@@ -879,12 +882,15 @@ const alacrity = (function () {
   /**
    * Get the coordinates on a circle centered at 0, 0 with a radius of 1 (a unit circle) from a decimal value 0-1 where 0 and 1 are both in the positive Y direction at X = 0.
    * @param {number} places - the number of digits after the decimal point to return in the result
+   * recent edit: changed default value for places from 2 to 9 on Sep 8 2021
    */
-  function unitCircleCoordsFromDecimal (decimal, places = 2) {
+  function unitCircleCoordsFromDecimal (decimal, places = 9) {
     let x = Math.sin(radiansFromDecimal(decimal))
     let y = Math.cos(radiansFromDecimal(decimal))
-    x = roundToPlaces(places, x)
-    y = roundToPlaces(places, y)
+    if (places) {
+      x = roundToPlaces(places, x)
+      y = roundToPlaces(places, y)
+    }
     return [x, y]
   }
   unitTests.push(['unitCircleCoordsFromDecimal()',
@@ -895,7 +901,8 @@ const alacrity = (function () {
   ])
 
   /**
-   * @param {number} decimal - a number between 0 and 1 where 0 is the point at 0,1 on a unit circle and 1 represents a full circle back to that point
+   * alias - alacrity.circPoint
+   * @param {number} decimal - a number between 0 and 1 where 0 is the point at 0,1 on a unit circle and 1 represents a full circle back to that point (starts from bottom and runs counter-clockwise in SVG)
    */
   function getPointOnCircle (center, radius, decimal) {
     const unitCoords = unitCircleCoordsFromDecimal(decimal)
@@ -904,8 +911,27 @@ const alacrity = (function () {
     return [finalX, finalY]
   }
   unitTests.push(['getPointOnCircle()',
-    [getPointOnCircle([0, 0], 10, 0), [0, 10]],
-    [getPointOnCircle([-10, 0], 10, 0), [-10, 10]]
+    [getPointOnCircle([0, 0], 2, 0), [0, 2]],
+    [getPointOnCircle([-10, 0], 2, 0), [-10, 2]],
+    [getPointOnCircle([-10, 0], 2, 0.5), [-10, -2]],
+    [getPointOnCircle([-10, 0], 2, 0.25), [-8, 0]]
+  ])
+
+  /**
+   * alias - alacrity.clockPoint
+   * @param {number} decimal - a number between 0 and 1 where 0 is the point at 0,-1 on a unit circle and 1 represents a full circle back to that point (starts from top and runs clockwise in SVG)
+   */
+  function getClockPointOnCircle (center, radius, decimal) {
+    const unitCoords = unitCircleCoordsFromDecimal(decimal)
+    const finalX = unitCoords[0] * radius + center[0]
+    const finalY = unitCoords[1] * -1 * radius + center[1]
+    return [finalX, finalY]
+  }
+  unitTests.push(['getClockPointOnCircle()',
+    [getClockPointOnCircle([0, 0], 2, 0), [0, -2]],
+    [getClockPointOnCircle([-10, 0], 2, 0), [-10, -2]],
+    [getClockPointOnCircle([-10, 0], 2, 0.5), [-10, 2]],
+    [getClockPointOnCircle([-10, 0], 2, 0.25), [-8, 0]]
   ])
 
   /** Adds vectors only, not bare numbers. */
@@ -1048,6 +1074,7 @@ const alacrity = (function () {
   /* Reveal functions and set aliases visible to outside scopes. */
   return {
   /* GENERAL */
+    hello: sayHello,
     typeCheck: typeCheck,
     l: log,
     log: log,
@@ -1094,6 +1121,7 @@ const alacrity = (function () {
     degreesFromRadians: degreesFromRadians,
     radiansFromThreePoints: radiansFromThreePoints,
     circPoint: getPointOnCircle,
+    clockPoint: getClockPointOnCircle,
     /* misc */
     hzFromNote: getFreqFromNote,
     lev: levenshteinDistance,
@@ -1105,5 +1133,3 @@ const alacrity = (function () {
     loadSessionString: loadSessionString
   }
 }())
-
-alacrity.l("'alacrity' library loaded!")

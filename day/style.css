@@ -1,0 +1,21 @@
+body{ 
+  background: #303842;
+  color: white;
+}
+svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+path {
+ stroke: currentColor;
+}
+circle {
+ stroke: currentColor;
+}
+.hide {
+  display:none;
+}
+.attn {
+  stroke: red;
+}
