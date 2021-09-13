@@ -1,36 +1,36 @@
-/* requires alacrity library version 2 or above, see - https://freshalacrity.github.io/a/alacrity2.js */
+/* requires alacrity.js - https://freshalacrity.github.io/a/alacrity2.js */
 /* globals alacrity */
 /* last major change: refactor and consolidation on Sep 7, 2021 */
 /*
+  = Recent Changes =
 - alacrity.makeElement => alacrity.make
-- rotation is generally applied after translation, so transform, group and then translate the group to keep the same position
 
   = TO DO =
-- get unit tests working where they're implemented here?
+- figure out how to have fullscreen SVGs zoom when I use CTRL+ etc (based on rem maybe?)
+  - pick this up from the timer codepen
 - troubleshoot arc so it's accurate to circles (like for petals)
-- get '_contents' properties working
+- get '_contents' properties/nested objects working with newSvgElement?
 - add donutWedge like pie wedge but with hole in the middle
 - figure out how to group svg elements so hovering over sections produces intutive results with css transitions
 - figure out why tooltip text isn't resizing (and in general fix/implement tooltips)
 - add the ability to include text in redirecting bracings (between the two arcs)
-- figure out how to have it zoom when I use CTRL+ etc (based on rem maybe?)
-  - pick this up from the timer codepen
 - add that geometric font from Gravit
 - add radial STL
-- function with names of shapes etc return objects that must be passed through make() or create() to be used
-- functions with Path in the name return fragments of a d='...' svg object property
 
+  = NOTES =
+- by default functions return an object to be passed through make() or create()
+- functions with Path in the name return strings to be used in the d='...' svg object property
+- rotation is generally applied after translation, so transform, group and then translate the group to keep the same position
 */
 
-const svg = (function () { // eslint-disable-line no-unused-vars
-  /* Setup for runUnitTests() - @later figure out if we wanna even do that for this mini lib */
-  // const unitTests = []
+/*  */
 
+const svg = (function () {
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
   const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
   function sayHello () {
-    alacrity.log('\'alacrity\' SVG supplemental library loaded for version: 2.1+')
+    alacrity.log('\'alacrity\' SVG supplement library loaded')
   }
   function getSvgAttributes (element) {
     const obj = {}
@@ -58,7 +58,7 @@ const svg = (function () { // eslint-disable-line no-unused-vars
   }
   /* @todo is this used/needed? */
   function make (...args) {
-    return alacrity.makeElement(alacrity.smoosh(...args))
+    return alacrity.make(alacrity.smoosh(...args))
   }
 
   function mid (pt1, pt2) {
@@ -67,49 +67,38 @@ const svg = (function () { // eslint-disable-line no-unused-vars
   function parts (num) {
     return alacrity.range(num).map(a => a / num)
   }
-  // todo compare dialPoints and onCircle - they may be duplicates
+
   /**
-   * @param offset a decimal value to rotate each decimal value by
-   * @param {number} [center=[0, 0]]
-   * @returns {number[][]} nested array of points around a circle, given an array of decimal values
+   * @param offset - a decimal value to rotate each decimal value by
+   * @param {number[]} [center=[0, 0]]
+   * @returns {number[][]} - a nested array of points around a circle, given an array of decimal values
    */
-  function onCircle (decimalValues, radius, center = [0, 0], offset = 0) {
+  function toCirclePoints (decimalValues, radius = 1, center = [0, 0], offset = 0) {
     return decimalValues.map(a => alacrity.circPoint(center, radius, a + offset))
   }
-  function dialPoints (center = [0, 0], r = 1, num = 12, offset = 0) {
-    return parts(num).map(a => alacrity.circPoint(center, r, a + offset))
+  function dialPoints (center = [0, 0], radius = 1, num = 12, offset = 0) {
+    return toCirclePoints(parts(num), radius, center, offset)
+  }
+  /**
+   * @param stride - the number of points skipped by each line
+   */
+  function starPoints (num, stride, radius, center, offset = 0) {
+    const points = alacrity.range(num).map(a => a * (stride / num))
+    return toCirclePoints(points, radius, center, offset)
   }
 
-  function circularPath (center, r, flipHorizontal = false, flipVertical = false) {
-    // todo use simpleArcSegment()?
-    // arcs: rx ry x-axis-rotation large-arc-flag sweep-flag x y
-    // clockwise:        d="M 0,-45 A 45,45 0 1,1 0,45     A 45,45 0 1,1 0,-45"
-    // counterclockwise: d="M 0,-45 A 45,45 0 1,0 0,45     A 45,45 0 1,0 0,-45"
-    const largeArc = 1
-    let sweep = 1
-    if (flipHorizontal) {
-      sweep = 0
-    }
-    const fx = center[0]; const sx = center[0]; let fy = center[1] - r; let sy = center[1] + r
-    if (flipVertical) { // flip the y values
-      fy = center[1] + r; sy = center[1] - r
-    }
-    let arcPoints = `M ${fx}, ${fy}`
-    arcPoints += ` A ${r}, ${r} 0 ${largeArc}, ${sweep} ${sx}, ${sy}`
-    arcPoints += ` A ${r}, ${r} 0 ${largeArc}, ${sweep} ${fx}, ${fy}`
-    return arcPoints
-  }
   function line (points = [[0, 0], [100, 100]], dTail = '') {
-    return {
+    const line = {
       _element: 'path',
       d: 'M ' + points.join(' ') + dTail
     }
+    return make(line)
   }
   function radialMarks (center = [0, 0], r = 40, num = 12, length = 5, offset) {
     const pts = alacrity.transpose([dialPoints(center, r, num, offset), dialPoints(center, r - length, num, offset)])
     return {
       _element: 'g',
-      _contents: (pts.map(a => make(line(a))).join('')),
+      _contents: (pts.map(a => line(a)).join('')),
       _innerRadius: (r - length)
     }
   }
@@ -119,31 +108,58 @@ const svg = (function () { // eslint-disable-line no-unused-vars
     * sweep flag dictates clockwise vs counterclockwise */
     return `M ${startCoords} A ${r} ${r} 0 ${arcFlag} ${sweepFlag} ${endCoords} `
   }
-
-  function arc (centerCoords, radius, startDecimal = 0, endDecimal = 0.4, longwayFlag = 0) {
+  function arc (center, r, startDecimal = 0, endDecimal = 0.4, longwayFlag = 0) {
     /* If the arc overlaps the 0 point, switch the flag:
     * @later check that this is actually what is needed/happening */
     if ((startDecimal - endDecimal) < 0) { longwayFlag = +!longwayFlag }
-    const startCoords = alacrity.circPoint(centerCoords, radius, startDecimal)
-    const endCoords = alacrity.circPoint(centerCoords, radius, startDecimal)
+    const startCoords = alacrity.circPoint(center, r, startDecimal)
+    const endCoords = alacrity.circPoint(center, r, startDecimal)
     return {
       _element: 'path',
-      d: arcPath(startCoords, endCoords, radius, longwayFlag)
+      d: arcPath(startCoords, endCoords, r, longwayFlag)
     }
   }
 
-  /** @todo fix this so it outputs an object, not a string */
-  function pieWedge (centerCoords, radius, startDecimal, endDecimal, longwayFlag = 1) {
-    const startCoords = alacrity.circPoint(centerCoords, radius, startDecimal)
-    const endCoords = alacrity.circPoint(centerCoords, radius, endDecimal)
+  /** Returns a circular path composed of two arcs, compatible with textPath() */
+  function circularPath (center, r, flipHorizontal = false, flipVertical = false) {
+    // arcs: rx ry x-axis-rotation large-arc-flag sweep-flag x y
+    // clockwise:        d="M 0,-45 A 45,45 0 1,1 0,45     A 45,45 0 1,1 0,-45"
+    // counterclockwise: d="M 0,-45 A 45,45 0 1,0 0,45     A 45,45 0 1,0 0,-45"
+    const largeArc = 1
+    let sweep = 1
+    if (flipHorizontal) { sweep = 0 }
+    const sx = center[0]
+    const fx = center[0]
+    let sy = center[1] + r
+    let fy = center[1] - r
+    if (flipVertical) {
+      sy = center[1] - r
+      fy = center[1] + r
+    }
+    let arcPoints = `M ${fx}, ${fy}`
+    arcPoints += ` A ${r}, ${r} 0 ${largeArc}, ${sweep} ${sx}, ${sy}`
+    arcPoints += ` A ${r}, ${r} 0 ${largeArc}, ${sweep} ${fx}, ${fy}`
+    return arcPoints
+  }
+
+  /**
+   * @todo make a wrapper to output an object?
+   * @todo use arc()
+  */
+  function pieWedgePath (center, r, startDecimal, endDecimal, longwayFlag = 1) {
+    const startCoords = alacrity.circPoint(center, r, startDecimal)
+    const endCoords = alacrity.circPoint(center, r, endDecimal)
     /* If the arc overlaps the 0 point, switch the flag:
       * @later check that this is actually what is needed/happening */
     if ((startDecimal - endDecimal) < 0) { longwayFlag = +!longwayFlag }
-    return `<path d="M ${startCoords} A ${radius} ${radius} 1 ${longwayFlag} 1 ${endCoords} Z" />`
+    return `M ${startCoords} A ${r} ${r} 1 ${longwayFlag} 1 ${endCoords} Z`
   }
-  /* unitTests.push(['getSvgPieWedgeElement()',
-    [getSvgPieWedgeElement([100, 100], 50, 0.25, 0.5, 0, 'stroke="red"'), '<path d="M 150,100 A 50 50 1 1 1 100,50 Z" stroke="red" />']
-  ]) */
+  function pieWedge (...args) {
+    return {
+      _element: 'path',
+      d: pieWedgePath(...args)
+    }
+  }
 
   /**
    * @param size - % of larger circle's circumference
@@ -156,9 +172,9 @@ const svg = (function () { // eslint-disable-line no-unused-vars
   function redirectingBracings (center, r, size = 0.3, offset = 0, num = 3, protrusion = 0.1) {
     offset += 0.5
     const clipId = `circle-clip-${center}-${r}`
-    const mask = alacrity.makeElement({
+    const mask = alacrity.make({
       _element: 'clipPath',
-      _contents: alacrity.makeElement(circle(center, r)),
+      _contents: alacrity.make(circle(center, r)),
       id: clipId
     })
     let each = dialPoints(center, r * (1 - protrusion), num, offset)
@@ -180,13 +196,6 @@ const svg = (function () { // eslint-disable-line no-unused-vars
     }
   }
 
-  /**
-   * @param stride - the number of points skipped by each line
-   */
-  function starPoints (num, stride, radius, center, offset = 0) {
-    const points = alacrity.range(num).map(a => a * (stride / num))
-    return onCircle(points, radius, center, offset)
-  }
   function polygon (center, r, numPoints, offset, obj) {
     if (numPoints <= 1) { return circle(center, r) }
     const points = dialPoints(center, r, numPoints, offset + 0.5).reverse()
@@ -241,9 +250,8 @@ const svg = (function () { // eslint-disable-line no-unused-vars
     const m2 = alacrity.circPoint(center, r - l / 2, a + step / 2)
     const q4 = alacrity.circPoint(center, r - l / 2, a + step)
     const b2 = alacrity.circPoint(center, r - l, a + step)
-    // const base = arc(center, r, a - step, a + step)
+    // const base = arc(center, r, a - step, a + step) // @todo troubleshoot arcs like this not conforming precisely to circle
     return {
-      id: 'petal', // todo remove
       _element: 'path',
       d: `M ${b1} Q ${q1} ${m1} Q ${q2} ${tip} Q ${q2} ${m2} Q ${q4} ${b2} A ${r} ${r} 1 0 1 ${b1} Z`
     }
@@ -295,7 +303,7 @@ const svg = (function () { // eslint-disable-line no-unused-vars
 
     return {
       _element: 'g',
-      _contents: [bg, txt].map(alacrity.makeElement).join('')
+      _contents: [bg, txt].map(alacrity.make).join('')
     }
   }
   function textPath (pathId, text, size, offset = 0) {
@@ -356,7 +364,7 @@ const svg = (function () { // eslint-disable-line no-unused-vars
         polygon(center, r, text.length, offset - 0.5, obj),
         polygonText(center, r - l - pad1, text, l, offset, obj),
         inner
-      ].map(alacrity.makeElement).join(''),
+      ].map(alacrity.make).join(''),
       _innerRadius: inner._innerRadius
     }
   }
@@ -369,7 +377,7 @@ const svg = (function () { // eslint-disable-line no-unused-vars
     svgElements += '<defs>'
     const path = polygon(center, r, text.length, offset, obj)
     path.id = pathId
-    svgElements += alacrity.makeElement(path)
+    svgElements += alacrity.make(path)
     svgElements += '</defs>'
     svgElements += '<text>'
     svgElements += text.map((a, i) =>
@@ -413,10 +421,9 @@ const svg = (function () { // eslint-disable-line no-unused-vars
     }, { function: circle }, {
       function: simpleText,
       args: ['x']
-    }/*, {
-      function: tooltip
-    } */
+    }
   ]
+  /** uses the _innerRadius property of objects to nest compatible objects together visually */
   function nested (list = sample, r = 45, padding = 0, center = [0, 0]) {
     const nestWithin = (string, obj) => {
       obj = alacrity.smoosh({ args: [], adjust: 0 }, obj)
@@ -435,7 +442,6 @@ const svg = (function () { // eslint-disable-line no-unused-vars
     circle: circle,
     polygon: polygon,
     star: star,
-    onCircle: onCircle,
     circleText: circleText,
     polygonText: polygonText,
     polygonTextLined: polygonTextLined,
@@ -444,9 +450,12 @@ const svg = (function () { // eslint-disable-line no-unused-vars
     petals: petals,
     radialMarks: radialMarks,
     dialPoints: dialPoints,
+    toCirclePoints: toCirclePoints,
     nestedCircles: nested,
     tooltip: tooltip,
     text: simpleText,
     hello: sayHello
   }
 }())
+
+svg.hello()

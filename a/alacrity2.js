@@ -685,6 +685,11 @@ const alacrity = (function () { // eslint-disable-line no-unused-vars
   }
 
   /* MATH */
+  function newId () {
+    /* uses the maximum value for a 32-bit unsigned integer; 2^32 - could possibly give repeat ids but very unlikely to */
+    return Math.ceil(Math.random() * 4294967295).toString(16)
+  }
+
   /**
    * Wraps numbers around a range, end bound inclusive.
    * @param {number} input - the number to wrap into the specified range
@@ -1096,6 +1101,7 @@ const alacrity = (function () { // eslint-disable-line no-unused-vars
     $html: $html,
     addHtml: addHtml,
     print: printMe,
+    newId: newId,
     make: makeElement,
     /* for backwards compatibility: */
     makeElement: makeElement,
@@ -1117,8 +1123,11 @@ const alacrity = (function () { // eslint-disable-line no-unused-vars
     dist: distanceBetweenTwoPoints,
     /* vectors */
     pairwise: pairwise,
+    normalize: normalizeVector,
+    findMagnitude: findVectorMagnitude,
     /* angles, circles and trig */
     degreesFromRadians: degreesFromRadians,
+    radiansFromTwoPoints: radiansFromTwoPoints,
     radiansFromThreePoints: radiansFromThreePoints,
     circPoint: getPointOnCircle,
     clockPoint: getClockPointOnCircle,

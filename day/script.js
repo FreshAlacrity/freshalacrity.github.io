@@ -15,6 +15,7 @@
 // [ ] allow adding arcs for scheduled stuff (manually for now)
 //     [ ] optionally add transit time
 // [ ] adjust other arcs around the dragged ones with some elasticity
+// [ ] show the 'tail' on caffeine consumption (~6 hrs) and also maybe how long it takes before withdrawals?
 // see also https://codepen.io/WanderingEnby/pen/ExaYeRB
 
 /*
@@ -31,7 +32,7 @@ https://docs.google.com/spreadsheets/d/1tEiAZ5rt_Vp4kerZXpFG9Xe9OuFOqpuipM-CAHOA
 
 const DateTime = luxon.DateTime
 const now = DateTime.now()
-let settings = {
+const settings = {
   Time: {
     value: 'foo',
     type: 'time',

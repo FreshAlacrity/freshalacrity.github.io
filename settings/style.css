@@ -1,0 +1,139 @@
+/* SETTINGS ICON */
+#settings-icon {
+  position: absolute;
+  bottom: 5vh;
+  right: 5vh;
+  cursor: pointer;
+  background: none;
+  color: currentColor;
+}
+
+/* SETTINGS MENU STYLES */
+
+#settings-container {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  margin: 5vh 5vw;
+  width: 90vw;
+  height: 90vh;
+  overflow: auto;
+}
+
+.settings-panel {
+  color: #303842;
+  background: white;
+  margin: auto;
+  overflow: auto;
+  padding: 1.5em;
+}
+
+.settings-card {
+  margin: 0;
+  padding: 0;
+}
+
+.settings-title {
+  font-weight: bold;
+  text-align: center;
+  margin: 0 0 2em 0;
+}
+
+.settings-header {
+  margin: 2em 0 0 0;
+  font-variant: small-caps;
+  opacity: 0.5;
+  border-bottom: 1px solid currentColor;
+}
+
+.settings-input, .settings-button {
+  margin: 0 0 0 0.2em;
+  background-color: #30384222;
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  border: none;
+  padding: 0.1em 0 0 0.2em;
+  height: 1.5em;
+  text-decoration: none;
+  /*display: inline-block;*/
+  float: right;
+  transform: translateY(-0.2em);
+}
+.settings-input:hover, .settings-button:hover {
+  background-color: #30384255;
+}
+
+.settings-button, .settings-color, .settings-reset, .settings-submit, .settings-file {
+  padding: 0em 0.2em;
+  border: 0.1em solid #303842;
+}
+
+.settings-text, .settings-url, .settings-email, .settings-tel, .settings-number, .settings-password, .settings-search, .settings-datetime-local, .settings-date, .settings-month, .settings-time, .settings-week {
+  border-top: none;
+  border-right: none;
+  border-left: none;
+  border-bottom: 0.1em solid #303842;
+}
+
+.settings-datetime-local, .settings-date, .settings-month, .settings-time, .settings-week {
+  padding: 0em 0em 0em 0.4em;
+}
+
+/* Date/Time Entry Icons 
+::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+}
+*/
+
+.settings-text, .settings-tel, .settings-search {
+  width: 5.663em;
+}
+.settings-number {
+  width: 3.5em;
+}
+
+.settings-checkbox, .settings-radio {
+  /* todo later replace with svg toggles */
+  width: 1.2em;
+  margin: 0;
+  border: 2px solid #303842;
+}
+
+.settings-range {
+  width: 7em;
+  height: 1em;
+}
+
+
+/* SCROLLBAR STYLES */
+
+/* width */
+::-webkit-scrollbar {
+  width: .7vw;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #303842; 
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #ffffff55; 
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #ffffff;
+}
+
+
+/* Adaptive Design (todo) */
+@media all and (max-width: 70rem) {
+  #widescreen, #mobile { opacity: 0; }
+}
+@media print {}
