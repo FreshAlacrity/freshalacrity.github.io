@@ -92,7 +92,7 @@ const svg = (function () {
       _element: 'path',
       d: 'M ' + points.join(' ') + dTail
     }
-    return make(line)
+    return line
   }
   function radialMarks (center = [0, 0], r = 40, num = 12, length = 5, offset) {
     const pts = alacrity.transpose([dialPoints(center, r, num, offset), dialPoints(center, r - length, num, offset)])
