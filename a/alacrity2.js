@@ -976,7 +976,12 @@ function swingPoint (center, coord, decimalAngle) {
            radiansFromTwoPoints(centerPoint, firstPoint)
   }
 
-  /* DATES */
+  /* DATES & TIME */
+  function delay(seconds) {
+    // via https://javascript.info/task/delay-promise
+    return new Promise((resolve) => setTimeout(resolve, seconds / 1000));
+  }
+
   /**
     * Returns week of the month from index 0
     * @later rewrite this as not a Date method and check that it works */
@@ -1144,6 +1149,7 @@ function swingPoint (center, coord, decimalAngle) {
     circPoint: getPointOnCircle,
     clockPoint: getClockPointOnCircle,
     /* misc */
+    delay: delay,
     hzFromNote: getFreqFromNote,
     lev: levenshteinDistance,
     saveFile: saveTextAsFile,
