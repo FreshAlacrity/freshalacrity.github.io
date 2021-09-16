@@ -4,6 +4,7 @@
 
 /* Common shortcuts: */
 function $ (x) { return document.getElementById(x) }
+const TAU = Math.PI * 2
 
 const alacrity = (function () { // eslint-disable-line no-unused-vars
   function sayHello () {
@@ -791,6 +792,16 @@ const alacrity = (function () { // eslint-disable-line no-unused-vars
     [findOffset([-5, 1, 0], [1, 0, 6]), [-6, 1, -6]]
   ])
 
+/** Rotate a point around another point by an angle 0-1 where 1 is a full circle */
+function swingPoint (center, coord, decimalAngle) {
+  let radians = decimalAngle * Math.PI * 2
+  let x1 = coord[0] - center[0]
+  let y1 = coord[1] - center[1]
+  let x2 = x1 * Math.cos(radians) - y1 * Math.sin(radians)
+  let y2 = x1 * Math.sin(radians) + y1 * Math.cos(radians)
+  return [x2 + center[0], y2 + center[1]]
+}
+
   /* VECTORS */
 
   /** Normalize/find unit vector from vector array/array of magnitudes by axis.
@@ -1118,6 +1129,7 @@ const alacrity = (function () { // eslint-disable-line no-unused-vars
     fix: fix,
     lerp: lerp,
     offsetTowards: offsetTowards,
+    swingPoint: swingPoint,
     length: lengthFromPoints,
     roundTo: roundToPlaces,
     dist: distanceBetweenTwoPoints,
