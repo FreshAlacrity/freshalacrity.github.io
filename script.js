@@ -198,7 +198,7 @@ function createProjectEntry (id) {
       }))
     }
   }
-  let links = ['live', 'codepen', 'mockup', 'github', 'brief', 'other']
+  let links = ['live', 'codepen', 'github', 'other']
   let linked = false
   links.forEach(l => { 
     if (obj[l]) { order -= 1 }
