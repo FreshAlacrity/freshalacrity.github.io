@@ -26,7 +26,7 @@ const fullscreen = (function () {
       /* use the known view size to zoom in and out when it changes */
       let vw = (100 * w) / _internal.window.initialWidth
       let vh = (100 * h) / _internal.window.initialHeight
-      if (!isNaN(z)) {
+      if (!isNaN(vw) || !isNaN(vh)) {
         $(_internal.window.svgId).setAttribute(
           
             "viewBox", `-${vw / 2} -${vh / 2} ${vw} ${vh}`  
@@ -34,7 +34,7 @@ const fullscreen = (function () {
         )
       } else {
         // working on figuring out why this happens when it does:
-        console.log(`Invalid input for viewbox size... width: ${w}, initial width: ${initialWidth} and z: ${z}`)
+        console.log(`Invalid input for viewbox size... vw: ${ww}, vh: ${vh} and w: ${w} and h: ${h} and iw: ${_internal.window.initialWidth} and ih: ${_internal.window.initialHeight}`)
       }
 
       /* track the relationship between screen size and svg coordinates */
