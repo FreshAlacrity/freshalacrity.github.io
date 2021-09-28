@@ -85,7 +85,7 @@ function init () {
   allSvgElements += `<circle cx="0" cy="0" r="${radius}" fill="none" />`
   allSvgElements += `<circle cx="0" cy="0" r="${1}" fill="currentColor" />`
   $(svgId).innerHTML = allSvgElements
-  fullscreen.setup(svgId, update, true)
+  fullscreen.setup(svgId, true)
 }
 init()
 

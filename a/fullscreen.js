@@ -2,14 +2,24 @@ const fullscreen = (function () {
   // @later start the mouse indicator offscreen
   // @todo figure out why mouse position isn't being correctly recalculated when the screen is zoomed
   // @todo troubleshoot view edges not working correctly when w < h
-
   const _internal = {
+    debug: true, 
     indicator: false,
     // w and h are in svg units, vw and vh are in pixels - @later rename for clarity?
     window: { initialWidth: 100, initialHeight: 100, w: 100, h: 100, vw: 100, vh: 100, ratio: 1, center: [0, 0] },
     // @todo update center point when using the mouse to drag the viewBox around
     mouse: { clientX: 0, clientY: 0, x: 0, y: 0, down: false }
   }
+
+  function log (...args) {
+    if (storage.debug) {
+      console.log(alacrity.tidy(...args))
+    }
+  }
+  function peep(data) {
+    log('no update function specified; data has ' + data.length + ' rows')
+  }
+
   function updateWindow() {
       let w = alacrity.getPageWidth()
       let h = alacrity.getPageHeight()
@@ -58,13 +68,13 @@ const fullscreen = (function () {
     mouseMove(event)
     _internal.mouse.down = true
     if (_internal.indicator) { svg.setAtts($('click-indicator'), { 'fill-opacity': 1 }) }
-    update()
+    _internal.update()
   }
   function mouseUp (event) {
     mouseMove(event)
     _internal.mouse.down = false
     if (_internal.indicator) { svg.setAtts($('click-indicator'), { 'fill-opacity': 0.2 }) }
-    update()
+    _internal.update()
   }
   function mousePos () {
     const x = (_internal.mouse.clientX - _internal.window.vw / 2) * _internal.window.ratio;
@@ -78,7 +88,7 @@ const fullscreen = (function () {
     _internal.mouse.clientY = event.clientY
     mousePos()
   }
-  function setup (svgId, showIndicators) {
+  function setup (svgId, updateFunction, showIndicators = true) {
     _internal.window.svgId = svgId
     _internal.window.initialWidth = alacrity.getPageWidth()
     _internal.window.initialHeight = alacrity.getPageHeight()
@@ -86,6 +96,11 @@ const fullscreen = (function () {
     document.addEventListener('mousemove', mouseMove)
     document.addEventListener('mouseup', mouseUp)
     alacrity.onWindowResize(changeView)
+    if (updateFunction) {
+      _internal.update = updateFunction
+    } else {
+      _internal.update = peep
+    }
     if (showIndicators) { 
       _internal.indicator = true 
       $(svgId).appendChild(svg.new('circle', { id: 'click-indicator', cx: 0, cy: 0, r: 2, fill: 'currentColor', 'fill-opacity': 0.2, 'stroke-opacity': 0 }))
