@@ -19,9 +19,36 @@ const fullscreen = (function () {
   function peep(data) {
     log('no update function specified; data has ' + data.length + ' rows')
   }
-
+  function getWindowSize() {
+    // #later check and see if I can do this better
+    return new Promise((resolve, reject) => {
+      let tries = 10;
+      let w = alacrity.getPageWidth()
+      let h = alacrity.getPageHeight()
+      if (!w || !h) {
+        var trying = window.setInterval(() => {
+          tries--
+          console.log('Reattempting to get page width and height, ' + tries + ' tries left.') 
+          w = alacrity.getPageWidth()
+          h = alacrity.getPageHeight()
+          if (tries <= 0 || (w && h)) {
+            window.clearInterval(trying)
+            if (w && h) { 
+              resolve({ width: w, height: h }) 
+            } else { 
+              reject("Ack - page width and height could not be found.") 
+            }
+          }
+        }, 1000 / 20) // increase denominator to run at a higher framerate
+      } else {
+        resolve({ width: w, height: h })
+      }
+    })
+  }
   function updateWindow() {
-    function doUpdate(w, h){
+    function doUpdate(current){
+      let w = current.width
+      let h = current.height
       /* zoom in and out when the zoom level changes */
       let vw = (100 * w) / _internal.window.initialWidth
       let vh = (100 * h) / _internal.window.initialHeight
@@ -57,29 +84,15 @@ const fullscreen = (function () {
       }
       mousePos() // @todo figure out why this isn't applying accurately to preserve mouse position when zooming
       update()
-
     }
-
-    let w = alacrity.getPageWidth()
-    let h = alacrity.getPageHeight()
-    if (!isNaN(w) || !isNaN(h)) {
-      doUpdate(w, h)
-    } else {
-      console.log(`Invalid input for viewbox size... vw: ${ww}, vh: ${vh} and w: ${w} and h: ${h} and iw: ${_internal.window.initialWidth} and ih: ${_internal.window.initialHeight}`)
-      // working on figuring out why this happens when it does:
-      alacrity.delay(0.3).then(() => { 
-        let w = alacrity.getPageWidth()
-        let h = alacrity.getPageHeight()
-        console.log(`Second try at viewbox size... vw: ${ww}, vh: ${vh} and w: ${w} and h: ${h} and iw: ${_internal.window.initialWidth} and ih: ${_internal.window.initialHeight}`)
-        doUpdate(w, h) 
-      })
-    }
+    
+    getWindowSize().then(doUpdate)
   }
   function changeView() {
     updateWindow()
     mousePos()
     /* check again just in case; sometimes the first one misses window resizing */
-    alacrity.delay(0.3).then(updateWindow)
+    alacrity.delay(0.2).then(updateWindow)
   }
   function mouseDown (event) {
     mouseMove(event)
@@ -107,16 +120,12 @@ const fullscreen = (function () {
   }
   function setup (svgId, updateFunction, showIndicators = true) {
     _internal.window.svgId = svgId
-    _internal.window.initialWidth = alacrity.getPageWidth()
-    _internal.window.initialHeight = alacrity.getPageHeight()
-    if (!_internal.window.initialWidth){
-      console.log('Issue getting initial width and height, trying again...')
-      alacrity.delay(0.3).then(() => {
-        _internal.window.initialWidth = alacrity.getPageWidth()
-        _internal.window.initialHeight = alacrity.getPageHeight()
-        console.log('Second try at getting initial width and height resulted in: ' + _internal.window.initialWidth + ' and ' + _internal.window.initialHeight)
-      })
-    }
+
+    getWindowSize().then(current => {
+      _internal.window.initialWidth = current.width
+      _internal.window.initialHeight = current.height
+    })
+
     document.addEventListener('mousedown', mouseDown)
     document.addEventListener('mousemove', mouseMove)
     document.addEventListener('mouseup', mouseUp)
