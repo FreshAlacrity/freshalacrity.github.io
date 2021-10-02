@@ -21,21 +21,14 @@ const fullscreen = (function () {
   }
 
   function updateWindow() {
-      let w = alacrity.getPageWidth()
-      let h = alacrity.getPageHeight()
-      /* use the known view size to zoom in and out when it changes */
+    function doUpdate(w, h){
+      /* zoom in and out when the zoom level changes */
       let vw = (100 * w) / _internal.window.initialWidth
       let vh = (100 * h) / _internal.window.initialHeight
-      if (!isNaN(vw) || !isNaN(vh)) {
-        $(_internal.window.svgId).setAttribute(
-          
-            "viewBox", `-${vw / 2} -${vh / 2} ${vw} ${vh}`  
 
-        )
-      } else {
-        // working on figuring out why this happens when it does:
-        console.log(`Invalid input for viewbox size... vw: ${ww}, vh: ${vh} and w: ${w} and h: ${h} and iw: ${_internal.window.initialWidth} and ih: ${_internal.window.initialHeight}`)
-      }
+      $(_internal.window.svgId).setAttribute(
+          "viewBox", `-${vw / 2} -${vh / 2} ${vw} ${vh}`  
+      )
 
       /* track the relationship between screen size and svg coordinates */
       let ratio = 1;
@@ -64,6 +57,23 @@ const fullscreen = (function () {
       }
       mousePos() // @todo figure out why this isn't applying accurately to preserve mouse position when zooming
       update()
+
+    }
+
+    let w = alacrity.getPageWidth()
+    let h = alacrity.getPageHeight()
+    if (!isNaN(w) || !isNaN(h)) {
+      doUpdate(w, h)
+    } else {
+      console.log(`Invalid input for viewbox size... vw: ${ww}, vh: ${vh} and w: ${w} and h: ${h} and iw: ${_internal.window.initialWidth} and ih: ${_internal.window.initialHeight}`)
+      // working on figuring out why this happens when it does:
+      alacrity.delay(0.3).then(() => { 
+        let w = alacrity.getPageWidth()
+        let h = alacrity.getPageHeight()
+        console.log(`Second try at viewbox size... vw: ${ww}, vh: ${vh} and w: ${w} and h: ${h} and iw: ${_internal.window.initialWidth} and ih: ${_internal.window.initialHeight}`)
+        doUpdate(w, h) 
+      })
+    }
   }
   function changeView() {
     updateWindow()
@@ -99,6 +109,14 @@ const fullscreen = (function () {
     _internal.window.svgId = svgId
     _internal.window.initialWidth = alacrity.getPageWidth()
     _internal.window.initialHeight = alacrity.getPageHeight()
+    if (!_internal.window.initialWidth){
+      console.log('Issue getting initial width and height, trying again...')
+      alacrity.delay(0.3).then(() => {
+        _internal.window.initialWidth = alacrity.getPageWidth()
+        _internal.window.initialHeight = alacrity.getPageHeight()
+        console.log('Second try at getting initial width and height resulted in: ' + _internal.window.initialWidth + ' and ' + _internal.window.initialHeight)
+      })
+    }
     document.addEventListener('mousedown', mouseDown)
     document.addEventListener('mousemove', mouseMove)
     document.addEventListener('mouseup', mouseUp)

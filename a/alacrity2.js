@@ -979,6 +979,7 @@ function swingPoint (center, coord, decimalAngle) {
   /* DATES & TIME */
   function delay(seconds) {
     // via https://javascript.info/task/delay-promise
+    /* usage example: delay(3000).then(() => alert('runs after 3 seconds')) */
     return new Promise((resolve) => setTimeout(resolve, seconds / 1000));
   }
 

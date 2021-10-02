@@ -1,4 +1,4 @@
-/* requires alacrity.js - https://freshalacrity.github.io/a/alacrity2.js */
+/* requires alacrity.js version 2 - https://freshalacrity.github.io/a/alacrity2.js */
 /* globals alacrity */
 /* last major change: refactor and consolidation on Sep 7, 2021 */
 /*
@@ -6,16 +6,13 @@
 - alacrity.makeElement => alacrity.make
 
   = TO DO =
-- figure out how to have fullscreen SVGs zoom when I use CTRL+ etc (based on rem maybe?)
-  - pick this up from the timer codepen
 - troubleshoot arc so it's accurate to circles (like for petals)
+  - add donutWedge like pie wedge but with hole in the middle
 - get '_contents' properties/nested objects working with newSvgElement?
-- add donutWedge like pie wedge but with hole in the middle
-- figure out how to group svg elements so hovering over sections produces intutive results with css transitions
 - figure out why tooltip text isn't resizing (and in general fix/implement tooltips)
 - add the ability to include text in redirecting bracings (between the two arcs)
-- add that geometric font from Gravit
-- add radial STL
+  - later add that geometric font from Gravit
+  - later add radial STL
 
   = NOTES =
 - by default functions return an object to be passed through make() or create()
