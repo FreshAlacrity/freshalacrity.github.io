@@ -1,19 +1,20 @@
 function setWipFlag(){
   let wipStyle = `
-    /* requires a sensible .bg-color */
+    /* requires a sensible .bg-color class style to be visible */
     .wip-flag {
+      /* no idea why display: table; helps alignment but it does - see https://stackoverflow.com/questions/29366908/wrong-vertical-align-of-text-in-google-chrome-browser */
+      display: table;
       position: absolute;
       top: 0;
       right: 0;
       margin-top: 1em;
       padding: 0em 0.5em;
-      height: 1.2em;
+      height: 1em;
       background: currentColor;
       z-index: 1000;
       font-size: 1.5rem;
     }
     .wip-flag:before {
-      display: block;
       border-style: solid;
       content: "";
       border-width: 0.6em;
@@ -31,6 +32,14 @@ function setWipFlag(){
       width: 3em;
       height: 1em;
       z-index: 1;
+      display: inline;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      outline: 0;
+      font-size: 100%;
+      vertical-align: baseline;
+      background: transparent;
     }
   `
   alacrity.addStyle(wipStyle)
