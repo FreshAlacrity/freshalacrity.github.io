@@ -401,7 +401,11 @@ const alacrity = (function () { // eslint-disable-line no-unused-vars
     [dictToArray({ a: 'foo', b: 'bar' }), ['foo', 'bar']]
   ])
 
-  /* HTML */
+  /* HTML & CSS */
+  function reflow() {
+    // see https://gist.github.com/paulirish/5d52fb081b3570c81e3a
+    let foo = window.scrollX;
+  }
   function $html (idString, htmlString) {
     typeCheck('string', idString, htmlString)
     if (htmlString) {
@@ -1115,6 +1119,7 @@ function swingPoint (center, coord, decimalAngle) {
     sortMap: sortMap,
     transpose: transpose,
     /* HTML */
+    reflow: reflow,
     $html: $html,
     addHtml: addHtml,
     print: printMe,

@@ -29,6 +29,7 @@ const fullscreen = (function () {
         var trying = window.setInterval(() => {
           tries--
           console.log('Reattempting to get page width and height, ' + tries + ' tries left.') 
+          // case when this doesn't work - when the window is loading/refreshed in the background
           w = alacrity.getPageWidth()
           h = alacrity.getPageHeight()
           if (tries <= 0 || (w && h)) {
@@ -49,9 +50,17 @@ const fullscreen = (function () {
     function doUpdate(current){
       let w = current.width
       let h = current.height
-      /* zoom in and out when the zoom level changes */
-      let vw = (100 * w) / _internal.window.initialWidth
-      let vh = (100 * h) / _internal.window.initialHeight
+      let vw = w
+      let vh = h
+      if (_internal.window.initialWidth > 0) {
+        /* zoom in and out when the zoom level changes */
+        vw = (100 * w) / _internal.window.initialWidth
+        vh = (100 * h) / _internal.window.initialHeight
+      } else {
+        /* catch instances where initialWidth/Height haven't already been set and fix */
+        _internal.window.initialWidth = w
+        _internal.window.initialHeight = h
+      }
 
       $(_internal.window.svgId).setAttribute(
           "viewBox", `-${vw / 2} -${vh / 2} ${vw} ${vh}`  
@@ -83,7 +92,7 @@ const fullscreen = (function () {
         })
       }
       mousePos() // @todo figure out why this isn't applying accurately to preserve mouse position when zooming
-      update()
+      _internal.update() // #findme
     }
     
     getWindowSize().then(doUpdate)
