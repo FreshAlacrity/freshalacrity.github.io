@@ -402,9 +402,17 @@ const alacrity = (function () { // eslint-disable-line no-unused-vars
   ])
 
   /* HTML & CSS */
-  function reflow() {
+  function reflow () {
     // see https://gist.github.com/paulirish/5d52fb081b3570c81e3a
     let foo = window.scrollX;
+  }
+  function addStyle(styleString) {
+    // via https://stackoverflow.com/questions/15505225/inject-css-stylesheet-as-string-using-javascript
+    const css = document.createElement('style');
+    css.textContent = styleString;
+    css.type = 'text/css';
+    if (css.styleSheet) css.styleSheet.cssText = styleString; // for IE? untested
+    document.head.append(css);
   }
   function $html (idString, htmlString) {
     typeCheck('string', idString, htmlString)
@@ -1120,6 +1128,7 @@ function swingPoint (center, coord, decimalAngle) {
     transpose: transpose,
     /* HTML */
     reflow: reflow,
+    addStyle: addStyle,
     $html: $html,
     addHtml: addHtml,
     print: printMe,
