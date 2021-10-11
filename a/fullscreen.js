@@ -1,3 +1,15 @@
+/*
+  function rangeMap2D (sourceMin, sourceMax, destMin, destMax, input, mode = 'stretch') {
+    // stretch: rangeMap both ways
+    // slice: keep scale, fill
+    // meet: keep scale, shrink to fit
+    let sourceRange = diff(sourceMax, sourceMin)
+    let destRange = diff(destMax, destMin)
+    let scale = 
+
+  }
+*/
+
 const fullscreen = (function () {
   // @later start the mouse indicator offscreen
   // @todo figure out why mouse position isn't being correctly recalculated when the screen is zoomed
