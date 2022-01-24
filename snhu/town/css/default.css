@@ -1,0 +1,25 @@
+@font-face {
+  font-family: Majesti-Banner;
+  src: url("../fonts/majesti-banner/Majesti-Banner-Book.otf") format("opentype");
+}
+
+@font-face {
+  font-family: Majesti-Banner;
+  font-weight: bold;
+  src: url("../fonts/majesti-banner/Majesti-Banner-Bold.otf") format("opentype");
+}
+
+html {
+  font-family: Majesti-Banner;
+}
+
+h1 {
+  color: #be1e2d;
+}
+
+blockquote {
+  border: 2px solid #8a8c8f;
+  margin: 1em;
+  padding: 1em;
+  font-style: oblique;
+}
