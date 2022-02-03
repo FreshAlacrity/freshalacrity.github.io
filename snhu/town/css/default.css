@@ -23,6 +23,30 @@ h1 {
   color: #8a8c8f;
 }
 
+h2, h3 {
+  width: 100%;
+  padding: 3rem 0 0.1rem 0;
+  margin: 0;
+  border-bottom: 1px solid #8a8c8f;
+}
+
+p {
+  margin: 1rem 5vw;
+  text-align: justify;
+}
+
+footer {
+  width: 100%;
+  border-top: 1px solid #8a8c8f;
+  margin: 10rem 0 0 0;
+  padding: 2rem 0;
+}
+
+.page-content {
+  max-width: 1000px;
+  margin: 2em auto;
+}
+
 blockquote {
   border: 2px solid #8a8c8f;
   margin: 1em;
@@ -51,7 +75,7 @@ blockquote {
   padding-left: 0;  /* removes the list offset */
   list-style: none; /* removes the bullet-points */
   cursor: pointer;
-  margin: 2rem 0;
+  margin: 0 0 1rem 0;
 }
 
 .site-navigation a {
@@ -65,15 +89,11 @@ blockquote {
   padding: 1rem 3rem;
   margin: 0;
   outline: none;
-  display: inline;
+  display: inline-block;
   transition-duration: 0.7s;
 }
 
 .site-navigation li:hover,
 .site-navigation li:focus-within {
   background: #d7e4c2;
-}
-
-footer {
-  margin: 2rem 1rem;
 }
