@@ -126,3 +126,16 @@ fieldset {
 .indented {
   margin-left: 2em;
 }
+
+#map, .photo-splash {
+  animation: 2.7s ease-out 0.1s 1 splashEntry;
+}
+
+@keyframes splashEntry {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
