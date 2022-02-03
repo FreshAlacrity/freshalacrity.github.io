@@ -10,12 +10,12 @@
 }
 
 html {
-  font-family: Majesti-Banner;
+  text-align: center;
   padding: 1em;
 }
 
-h1 {
-  color: #be1e2d;
+h1, h2, h3 {
+  font-family: Majesti-Banner;
 }
 
 blockquote {
@@ -23,4 +23,52 @@ blockquote {
   margin: 1em;
   padding: 1em;
   font-style: oblique;
+}
+
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.image-credit {
+  position: relative;
+  font-size: small;
+  top: -1.5rem;
+}
+
+.image-credit a {
+  color: black;
+  text-decoration: none;
+}
+
+.site-navigation ul {
+  padding-left: 0;  /* removes the list offset */
+  list-style: none; /* removes the bullet-points */
+  cursor: pointer;
+  margin: 2rem 0;
+}
+
+.site-navigation a {
+  color: black;
+  font-size: large;
+  font-family: Majesti-Banner;
+  text-decoration: none;
+}
+
+.site-navigation li {
+  padding: 1rem 3rem;
+  margin: 0;
+  outline: none;
+  display: inline;
+  transition-duration: 0.7s;
+}
+
+.site-navigation li:hover,
+.site-navigation li:focus-within {
+  background: #d7e4c2;
+}
+
+footer {
+  margin: 2rem 1rem;
 }
