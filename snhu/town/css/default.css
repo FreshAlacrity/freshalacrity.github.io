@@ -150,7 +150,6 @@ fieldset {
 #map, .photo-splash {
   margin-left: auto;
   margin-right: auto;
-  animation: 2.7s ease-out 0.1s 1 splashEntry;
 }
 
 .photo-splash {
