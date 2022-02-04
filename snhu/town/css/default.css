@@ -60,13 +60,19 @@ blockquote {
 }
 
 .image-credit {
+  display: block;
+  text-align: right;
   position: relative;
   font-size: small;
-  top: -1.5rem;
+  top: -1.2rem;
+  left: 0;
+  color: #41393d;
 }
 
 .image-credit a {
-  color: black;
+  background-color: rgba(255, 255, 255, 0.5);
+  color: inherit;
+  padding: 0.3rem 0.6rem;
   text-decoration: none;
 }
 
