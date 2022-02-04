@@ -15,12 +15,13 @@ html {
 }
 
 h1, h2, h3 {
-  font-family: Majesti-Banner;
+  font-family: Majesti-Banner, Georgia;
 }
 
 h1 {
   font-size: 3rem;
   color: #8a8c8f;
+  font-variant: small-caps;
 }
 
 h2, h3 {
@@ -33,6 +34,10 @@ h2, h3 {
 .page-content {
   max-width: 1000px;
   margin: 2em auto;
+}
+
+section {
+  margin-bottom: 15vh;
 }
 
 section p {
@@ -97,7 +102,7 @@ blockquote {
 address {
   width: 100%;
   border-top: 1px solid #8a8c8f;
-  margin: 10rem 0 0 0;
+  margin: 2rem 0 0 0;
   padding: 1rem 0;
   color: #8a8c8f;
 }
