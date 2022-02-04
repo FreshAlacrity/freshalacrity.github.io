@@ -52,11 +52,9 @@ blockquote {
   font-style: oblique;
 }
 
-.center {
+.full {
   display: block;
   width: 100%;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 .image-credit {
@@ -74,6 +72,13 @@ blockquote {
   color: inherit;
   padding: 0.3rem 0.6rem;
   text-decoration: none;
+  transition-duration: 0.7s;
+}
+
+.image-credit a:hover,
+.image-credit a:focus-within {
+  color: black;
+  background-color: #d7e4c2;
 }
 
 .site-navigation ul {
@@ -139,7 +144,18 @@ fieldset {
 }
 
 #map, .photo-splash {
+  margin-left: auto;
+  margin-right: auto;
   animation: 2.7s ease-out 0.1s 1 splashEntry;
+}
+
+.photo-splash {
+  max-width: 1000px;
+}
+
+#map {
+  height: 95vh;
+  border: 0;
 }
 
 @keyframes splashEntry {
