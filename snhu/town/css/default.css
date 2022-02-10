@@ -85,13 +85,13 @@ blockquote {
   background-color: #d7e4c2;
 }
 
-.site-navigation ul {
+nav ul {
   padding-left: 0;  /* removes the list offset */
   list-style: none; /* removes the bullet-points */
   margin: 1rem 0 1rem 0;
 }
 
-.site-navigation a {
+nav a {
   color: black;
   display: inline-block;
   padding: 1rem 2rem;
@@ -103,14 +103,14 @@ blockquote {
   transition-duration: 0.7s;
 }
 
-.site-navigation li {
+nav li {
   margin: 0;
   padding: 0;
   display: inline-block;
 }
 
-.site-navigation a:hover,
-.site-navigation a:focus-within {
+nav a:hover,
+nav a:focus-within {
   background: #d7e4c2;
 }
 
