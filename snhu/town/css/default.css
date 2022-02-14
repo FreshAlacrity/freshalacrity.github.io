@@ -97,7 +97,6 @@ blockquote {
   background-color: rgba(255, 255, 255, 0.5);
   color: inherit;
   padding: 0.3rem 0.6rem;
-  text-decoration: none;
   transition-duration: 0.7s;
 }
 
@@ -147,12 +146,10 @@ address {
   border-top: 1px solid #8a8c8f;
   margin: 2rem 0 0 0;
   padding: 1rem 0;
-  color: #8a8c8f;
-}
-
-address a {
   color: #41393d;
-  text-decoration: none;
+}
+address a:link, address a:visited, address a:active {
+  color: black;
 }
 
 address p {
