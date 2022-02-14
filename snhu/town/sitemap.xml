@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+<!-- created with Free Online Sitemap Generator www.xml-sitemaps.com -->
+
+
+<url>
+  <loc>https://freshalacrity.github.io/snhu/town/</loc>
+  <lastmod>2022-02-14T02:01:42+00:00</lastmod>
+  <priority>1.00</priority>
+</url>
+<url>
+  <loc>https://freshalacrity.github.io/snhu/town/index.html</loc>
+  <lastmod>2022-02-14T02:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://freshalacrity.github.io/snhu/town/about.html</loc>
+  <lastmod>2022-02-14T02:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://freshalacrity.github.io/snhu/town/menu.html</loc>
+  <lastmod>2022-02-14T02:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://freshalacrity.github.io/snhu/town/reservations.html</loc>
+  <lastmod>2022-02-14T02:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://freshalacrity.github.io/snhu/town/location.html</loc>
+  <lastmod>2022-02-14T02:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+
+
+</urlset>

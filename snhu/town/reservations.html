@@ -59,6 +59,11 @@ Chinese recipes, menus, location"><!-- helps the site get found and indexed prop
   </header>
   <div class="page-content">
     <h1>Reservations</h1>
+    <div style="width:40vw;display:inline-block;">
+      <img class="full" src="images/place-setting-photo-by-annie-spratt-from-unsplash.jpeg" alt="a high-end place setting with white dishes, water and wine glasses, fine silverware, and a flower arrangement in a clear vase">
+      <!-- compressed using https://imagecompressor.com/ -->
+      <div class="image-credit"><a href="https://unsplash.com/@anniespratt?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText" title="See more work by this photographer">Photo by Annie Spratt</a></div>
+    </div><br><br><br><br>
     <section id="call-for-reservation">
       <h2>Call to Make a Reservation</h2>
       <p>We look forward to hearing from you! Call us at <a href="tel:5553332022">(555)-333-2022</a> to make
@@ -75,8 +80,8 @@ Chinese recipes, menus, location"><!-- helps the site get found and indexed prop
           <input type="tel" id="phone" name="phone"><br>
           <label for="email">Email Address</label>:
           <input type="email" id="email" name="email"><br>
-          <label for="contact-method">Preferred Contact Method</label>: <br>
-          <input type="radio" id="contact-by-phone" name="contact-method" value="Phone Call" class="indented">
+          <label>Preferred Contact Method</label>: <br>
+          <input type="radio" id="contact-by-phone" name="contact-method" value="Phone Call" class="indented" checked>
           <label for="contact-by-phone">Phone</label><br>
           <input type="radio" id="contact-by-text-message" name="contact-method" value="SMS" class="indented">
           <label for="contact-by-text-message">Text Message (SMS)</label><br>
@@ -89,8 +94,8 @@ Chinese recipes, menus, location"><!-- helps the site get found and indexed prop
           <label for="reservation-time">Time</label>: <input type="time" id="reservation-time" name="reservation-time"><br>
           <label for="requests">Accessibility Requests</label>: <br>
           <textarea name="requests" cols="60" rows="7"></textarea><br>
-          <label for="guests-num">Number of Guests</label>: <input type="number" name="guests-num"><br>
-          <label for="private-room">Private Party?</label> <input type="checkbox" name="private-room">
+          <label for="guests-num">Number of Guests</label>: <input id="guests-num" type="number" name="guests-num"><br>
+          <label for="private-room">Private Party?</label> <input id="private-room" type="checkbox" name="private-room">
         </fieldset>
         <input class="indented" type="submit" value="Request Reservation">
       </form>
