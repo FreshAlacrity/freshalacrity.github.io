@@ -14,12 +14,20 @@ html {
   padding: 1em;
 }
 
-#logo {
+#logo-container {
+  width: 400px;
+  height: 120px;
   margin-top: 5vh;
+  background-image: url("images/town_logo.jpg");
+  display: inline-block;
 }
 
-h1, h2, h3 {
+#logo-fallback, h1, h2, h3 {
   font-family: Majesti-Banner, Georgia;
+}
+
+#logo-fallback {
+  display: none;
 }
 
 h1 {
@@ -71,13 +79,14 @@ blockquote {
   color: #41393d;
 }
 
-.image-credit a {
+.image-credit a:link, .image-credit a:visited, .image-credit a:active {
   background-color: rgba(255, 255, 255, 0.5);
   color: inherit;
   padding: 0.3rem 0.6rem;
   text-decoration: none;
   transition-duration: 0.7s;
 }
+
 
 .image-credit a:hover,
 .image-credit a:focus-within {
@@ -173,5 +182,15 @@ fieldset {
   }
   100% {
     transform: translateX(0);
+  }
+}
+
+/* accessibility support added according to https://www.w3.org/WAI/WCAG21/Techniques/css/C39 */
+@media (prefers-reduced-motion: reduce) {
+  .image-credit a {
+    transition-duration: 0s;
+  }
+  nav a {
+    transition-duration: 0s;
   }
 }
