@@ -2,7 +2,7 @@
 <html lang="en" >
 <head>
   <meta charset="UTF-8">
-  <title>Pomodoro Timer 1.2</title>
+  <title>Pomodoro Timer 1.4</title>
   <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -90,9 +90,9 @@
   </style>
 </head>
 <body>
-<!-- partial:index.partial.html -->
+
 <div id="timer-container">
-  <svg viewBox="-50 -50 100 100" id="pomodoro-timer" class="progress" width="30%" height="95%" preserveAspectRatio="xMidYMid meet" onclick="timer()">
+  <svg viewBox="-50 -50 100 100" id="pomodoro-timer" class="progress" width="30%" height="95%" preserveAspectRatio="xMidYMid meet">
     <circle id="timer-progress" class="progress-ring" r="2em" cx="0" cy="0" />
     <circle class="background-ring" r="2em" cx="0" cy="0" />
     <foreignObject x="-50" y="-50" width="100%" height="5.7em">
@@ -106,152 +106,194 @@
     </foreignObject>
   </svg>
 </div>
-<!-- partial -->
-<script src='https://freshalacrity.github.io/a/alacrity1.js'></script>
-<script>
-var audioCtx;
-var runningTimer;
-document.title = "Pomodoro Timer";
 
-function playMelody(notes, settings){
-  if (!audioCtx){
-    var AudioContext = window.AudioContext || window.webkitAudioContext;
-    audioCtx = new AudioContext();
-  }
-  let volume = 0.1;
-  let defaults = {
-    waveform: 'square', //also Sine Square Triangle Sawtooth
-    frequencies: [440, 550, 660, 770, 880],
-    tempo: 0.13,
-    attack: 0.01,
-    release: 0.01,
-    slide: 0.01,
-    sustain: 0.36,
-    gain: 0.1,
-    gap: 0.1
-  }
-  let s = Object.assign(defaults, settings);
-  let o = audioCtx.createOscillator();
-  let g = audioCtx.createGain();
-  o.connect(g);
-  o.frequency.value = defaults.frequencies[2];
-  o.type = s.waveform;
-  g.connect(audioCtx.destination);
-  g.gain.value = 0.00001;
-  o.start(audioCtx.currentTime);
-  
-  let startBoop = (index, pitch) => {
-    //console.log(`startBoop called with index: ${index} and pitch: ${pitch}`);
+<script>
+  // see https://codepen.io/eahartmann/pen/MWvwJKo?editors=0010 for current dev version
+  // browser parameter support is included for auto-start and duration but auto-start timers will NOT make sound due to autoplay restrictions
+
+  var runningTimer // container for the setTimeout() call in startTimer()
+  var audioCtx // setup for the playMelody() call in timerEnd()
+
+  function setupUserInteractions() {
+    document.getElementById('pomodoro-timer').addEventListener('click', (event) => {
+      startTimer()
+    });
     
-    let when = audioCtx.currentTime + (index + s.gap) * s.tempo;
-    //console.log(`shifting gain at time index: ${when} to volume: ${volume} and ramp: ${attack}`);
-    g.gain.setTargetAtTime(s.gain, when, s.attack);
+    document.getElementById('time-container').addEventListener('blur', (event) => {
+      startTimer()
+    });
     
-    /* fade */
-    when = audioCtx.currentTime + (index + (s.attack * 2)) * s.tempo;
-    g.gain.setTargetAtTime(s.sustain, when, s.attack * 2);
-    
-    when = audioCtx.currentTime + (index * s.tempo);
-    //console.log(`shifting frequency at time index: ${when} to pitch: ${frequencies[pitch]}`);
-    o.frequency.setTargetAtTime(s.frequencies[pitch], when, 0.00001);
-  }
-  let slideTo = (index, pitch) => {
-    //console.log(`slideTo called with index: ${index} and pitch: ${pitch}`);
-    let when = audioCtx.currentTime + (index - s.slide) * s.tempo;
-    o.frequency.setTargetAtTime(s.frequencies[pitch], when, s.slide * 2);
-  }
-  let endBoop = (index) => {
-    //console.log(`endBoop called with index: ${index}`);
-    let when = audioCtx.currentTime + (index - s.gap) * s.tempo;
-    g.gain.setTargetAtTime(0.00001, when, s.release);
-  }
-  
-  let slideHere = false;
-  for (let index = 0; index < notes.length; index++){
-    let pitch = parseInt(notes.charAt(index)) - 1;
-    if (pitch in s.frequencies){ // if it's 1-5
-      if (slideHere){
-        slideTo(index, pitch);
-      } else {
-        startBoop(index, pitch);
-        slideHere = true;
+    document.getElementById('time-container').addEventListener('keydown', (event) => {
+      // catch 'enter' and have it start the timer instead of making a new line
+      if (event.keyCode === 13) {
+        event.preventDefault()
+        startTimer()
       }
+    })
+
+    document.getElementById('title-container').addEventListener('click', (event) => {
+      // keep clicks on the title area from re-starting the timer
+      event.stopPropagation()
+    });
+
+    document.getElementById('title-container').addEventListener('blur', (event) => {
+      // when the text box is done being edited, set to document title
+      setPageTitle()
+    })
+  }
+
+  function init() {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('length')) {
+      // set timer duration
+      document.getElementById("time-container").innerHTML = params.get('length')
+    }
+    if (params.get('ongoing')) {
+      // start the timer when the page loads
+      startTimer()
+    }
+    
+    setupUserInteractions()
+  }
+
+  function getDuration() {
+    // get minutes number from html input field
+    let d = parseFloat(document.getElementById("time-container").innerHTML);
+    
+    if (!d || d < 0) {
+      alert("Whoops, that won't work - try entering a number of minutes.");
+      document.getElementById("time-container").innerHTML = "25";
+    }
+    
+    return d
+  }
+
+  function setPageTitle(d = getDuration()) {
+    if (document.getElementById('title-container').innerText != ""){
+      document.title = document.getElementById('title-container').innerText;
+    } else if (d != 25){
+      document.title = d + " Minute Timer"
     } else {
-      slideHere = false;
-      endBoop(index)
+      document.title = "Pomodoro Timer"
     }
   }
-  endBoop(notes.length);
-  //o.stop(audioCtx.currentTime + (notes.length) * tempo);
-}
 
+  function animate(durationInMinutes) {
+    // thanks to https://css-tricks.com/restart-css-animation/
+    
+    // retrieve the element
+    let element = document.getElementById("timer-progress");
 
-function animate(durationInMinutes){
-  // thanks to https://css-tricks.com/restart-css-animation/
-  
-  // retrieve the element
-  let element = document.getElementById("timer-progress");
-
-  // remove the class
-  element.classList.remove("run-animation");
-  
-  // trigger reflow /* The actual magic */
-  void element.focus();
-  
-  // re-adding the class
-  element.classList.add("run-animation");
-  
-  // set animation duration
-  element.style.animationDuration = (durationInMinutes * 60) + "s";
-}
-
-function timer(){
-  document.getElementById("timer-container").style.backgroundColor = "inherit";
-  var d = parseFloat(document.getElementById("time-container").innerHTML);
-  if (!d || d < 0) {
-    alert("Whoops, that won't work - try entering a number of minutes.");
-    document.getElementById("time-container").innerHTML = "25";
+    // remove the class
+    element.classList.remove("run-animation");
+    
+    // trigger reflow /* The actual magic */
+    void element.focus();
+    
+    // re-adding the class
+    element.classList.add("run-animation");
+    
+    // set animation duration
+    element.style.animationDuration = (durationInMinutes * 60) + "s";
   }
-  if ($('title-container').innerText != ""){
-    document.title = $('title-container').innerText;
-  } else if (d != 25){
-    document.title = d + " Minute Timer";
-  } else {
-    document.title = "Pomodoro Timer";
+
+  function startTimer() {
+    let d = getDuration()
+    
+    setPageTitle(d)
+    
+    // reset background from alert color to default
+    document.getElementById("timer-container").style.backgroundColor = "inherit";
+    
+    // start the progress animation
+    animate(d);
+
+    // start the actual timer running
+    clearTimeout(runningTimer);
+    runningTimer = setTimeout(timerEnd, d * 60000);
   }
-  
-  animate(d);
-  clearTimeout(runningTimer);
-  runningTimer = setTimeout(timerEnd, d * 60000);
-}
 
-function timerEnd(){
-  document.getElementById("timer-container").style.backgroundColor = "orange";
-  playMelody("33-33-3-2-1---332-444-5", {tempo: 0.11});
-  // beep melody code/tester/preview: https://codepen.io/WanderingEnby/pen/YzGYVvb
-}
-
-document.getElementById('time-container').addEventListener('keydown', (event) => {
-  // catch 'enter' and have it start the timer instead of making a new line
-  if (event.keyCode === 13) {
-    event.preventDefault();
-    timer();
+  function playMelody(notes, settings) {
+    // see also https://codepen.io/eahartmann/pen/YzGYVvb
+    
+    if (!audioCtx){
+      var AudioContext = window.AudioContext || window.webkitAudioContext;
+      audioCtx = new AudioContext();
+    }
+    let volume = 0.1;
+    let defaults = {
+      waveform: 'square', //also Sine Square Triangle Sawtooth
+      frequencies: [440, 550, 660, 770, 880],
+      tempo: 0.13,
+      attack: 0.01,
+      release: 0.01,
+      slide: 0.01,
+      sustain: 0.36,
+      gain: 0.1,
+      gap: 0.1
+    }
+    let s = Object.assign(defaults, settings);
+    let o = audioCtx.createOscillator();
+    let g = audioCtx.createGain();
+    o.connect(g);
+    o.frequency.value = defaults.frequencies[2];
+    o.type = s.waveform;
+    g.connect(audioCtx.destination);
+    g.gain.value = 0.00001;
+    o.start(audioCtx.currentTime);
+    
+    let startBoop = (index, pitch) => {
+      //console.log(`startBoop called with index: ${index} and pitch: ${pitch}`);
+      
+      let when = audioCtx.currentTime + (index + s.gap) * s.tempo;
+      //console.log(`shifting gain at time index: ${when} to volume: ${volume} and ramp: ${attack}`);
+      g.gain.setTargetAtTime(s.gain, when, s.attack);
+      
+      /* fade */
+      when = audioCtx.currentTime + (index + (s.attack * 2)) * s.tempo;
+      g.gain.setTargetAtTime(s.sustain, when, s.attack * 2);
+      
+      when = audioCtx.currentTime + (index * s.tempo);
+      //console.log(`shifting frequency at time index: ${when} to pitch: ${frequencies[pitch]}`);
+      o.frequency.setTargetAtTime(s.frequencies[pitch], when, 0.00001);
+    }
+    let slideTo = (index, pitch) => {
+      //console.log(`slideTo called with index: ${index} and pitch: ${pitch}`);
+      let when = audioCtx.currentTime + (index - s.slide) * s.tempo;
+      o.frequency.setTargetAtTime(s.frequencies[pitch], when, s.slide * 2);
+    }
+    let endBoop = (index) => {
+      //console.log(`endBoop called with index: ${index}`);
+      let when = audioCtx.currentTime + (index - s.gap) * s.tempo;
+      g.gain.setTargetAtTime(0.00001, when, s.release);
+    }
+    
+    let slideHere = false;
+    for (let index = 0; index < notes.length; index++){
+      let pitch = parseInt(notes.charAt(index)) - 1;
+      if (pitch in s.frequencies){ // if it's 1-5
+        if (slideHere){
+          slideTo(index, pitch);
+        } else {
+          startBoop(index, pitch);
+          slideHere = true;
+        }
+      } else {
+        slideHere = false;
+        endBoop(index)
+      }
+    }
+    endBoop(notes.length);
+    //o.stop(audioCtx.currentTime + (notes.length) * tempo);
   }
-});
 
-document.getElementById('time-container').addEventListener('blur', (event) => {
-  timer();
-});
+  function timerEnd() {
+    document.getElementById("timer-container").style.backgroundColor = "orange";
+    playMelody("33-33-3-2-1---332-444-5", {tempo: 0.11});
+    // beep boop melody code/tester/preview: https://codepen.io/WanderingEnby/pen/YzGYVvb
+  } 
 
-document.getElementById('title-container').addEventListener('click', (event) => {
-  // keep clicks on the title area from re-starting the timer
-  event.stopPropagation();
-});
-                                                  
-document.getElementById('title-container').addEventListener('blur', (event) => {
-  // when the title is done being set, set the document title
-  document.title = $('title-container').innerText;
-});
+  init()
 </script>
 </body>
 </html>
