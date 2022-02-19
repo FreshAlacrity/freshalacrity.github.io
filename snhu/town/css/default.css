@@ -186,15 +186,6 @@ fieldset {
   border: 0;
 }
 
-@keyframes splashEntry {
-  0% {
-    transform: translateX(100%);
-  }
-  100% {
-    transform: translateX(0);
-  }
-}
-
 /* accessibility support added according to https://www.w3.org/WAI/WCAG21/Techniques/css/C39 */
 @media (prefers-reduced-motion: reduce) {
   .image-credit a {
