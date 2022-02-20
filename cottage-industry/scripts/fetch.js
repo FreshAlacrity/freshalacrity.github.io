@@ -1,4 +1,3 @@
-
 const gitHubURL = 'https://raw.githubusercontent.com/FreshAlacrity/cottage-industry/main/'
 const sheetsURL = 'https://script.google.com/macros/s/AKfycbzzugBv5jR2zfsLlG2QY1ipj1aUzZid6Xw4jQkXHn8e0nIPXjHaUXSWZtV-rB8KzfI/exec'
 
@@ -7,6 +6,7 @@ function log (...args) { console.log(alacrity.tidy(...args)) }
 
 // localForage automatically does JSON.parse() and JSON.stringify() when getting/setting values
 
+// #todo fetch item sheet (will need to update and deploy apps script first)
 async function gatherData(fresh = false) {
   let dataObj = {}
   let dataSources = [

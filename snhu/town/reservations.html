@@ -81,13 +81,15 @@ Chinese recipes, menus, location"><!-- helps the site get found and indexed prop
           <input type="tel" id="phone" name="phone"><br>
           <label for="email">Email Address</label>:
           <input type="email" id="email" name="email"><br>
-          <label>Preferred Contact Method</label>: <br>
-          <input type="radio" id="contact-by-phone" name="contact-method" value="Phone Call" class="indented" checked>
-          <label for="contact-by-phone">Phone</label><br>
-          <input type="radio" id="contact-by-text-message" name="contact-method" value="SMS" class="indented">
-          <label for="contact-by-text-message">Text Message (SMS)</label><br>
-          <input type="radio" id="contact-by-email" name="contact-method" value="Email" class="indented">
-          <label for="contact-by-email">Email</label>
+          <label for="preferred-contact-method">Preferred Contact Method</label>: <br>
+          <div role="radiogroup" aria-labelledby="preferred-contact-method">
+            <input type="radio" id="contact-by-phone" name="contact-method" value="Phone Call" class="indented" checked>
+            <label for="contact-by-phone">Phone</label><br>
+            <input type="radio" id="contact-by-text-message" name="contact-method" value="SMS" class="indented">
+            <label for="contact-by-text-message">Text Message (SMS)</label><br>
+            <input type="radio" id="contact-by-email" name="contact-method" value="Email" class="indented">
+            <label for="contact-by-email">Email</label>
+          </div>
         </fieldset>
         <fieldset>
           <legend>Reservation Details</legend>
