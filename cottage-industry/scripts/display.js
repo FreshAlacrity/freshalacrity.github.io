@@ -1,23 +1,31 @@
+// add priority sort order function for keys - name first
 function display(data) {
+  // #todo dynamically generate page elements
   let changesElement = document.getElementById("recent-changes")
   let listElement = document.getElementById("featured-list")
   let headerElement = document.getElementById("page-header")
 
-  /*
-  let header = ''
-  header += `<h1>${data.name} Modpack</h1>`
-  // modloader & version
-  header += `<h2>For Minecraft ${data.gameVersion} and Forge ${data.baseModLoader.forgeVersion}</h2>`
-  headerElement.innerHTML = header
-  */
-
   let featured = '<h3>Featured Mods & Datapacks</h3>'
   let by = 'Status'
   for (const [ list, entries ] of Object.entries(data)) {
-    if (list === 'To_Identify'){
-      featured += `<h4>${list} (${entries.length})</h4>`
-      featured += `<ul><li>${entries.join('</li><li>')}</li></ul>`
-      //featured += `<pre>${JSON.stringify(entries, null, 2)}</pre>`
+    if (list !== 'Featured'){
+      let details = entries;
+      if (typeof entries === 'string') {
+        featured += `<h4>${list}: ${entries}</h4>`
+      } else if (typeof entries === 'array') {
+        featured += `<h4>${list} (${entries.length})</h4>`
+      } else {
+        featured += `<h4>${list} (${Object.entries(entries).length})</h4>`
+
+      }
+      /*
+      featured += `<ul>`
+      for (const [ item, details ] of Object.entries(entries)) {
+        featured += `<li>${item} - ${details.Filename}</li>`
+        //featured += `<pre>${JSON.stringify(entries, null, 2)}</pre>`
+      }
+      featured += `</ul>`
+      */
     } else {
       let categories = {}
       featured += `<h4>${list} (${entries.length})</h4>`

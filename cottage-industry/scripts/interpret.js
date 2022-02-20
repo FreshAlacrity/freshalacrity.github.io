@@ -29,7 +29,7 @@ function tableToJSON(tableData) {
 }
 
 function getFeaturedDetails(sheetData) {
-  return { featured_list: tableToJSON(sheetData) }
+  return { _possible_addon_list: tableToJSON(sheetData) }
 }
 
 // convert JSON from the instance.json file into something more handy
@@ -41,46 +41,62 @@ function simpleDate(utcString) {
   return(dateOnly)
 }
 
+// #later update these in apps script also
+function guessNamespace(str) {
+  let split = str.search(/[0-9]/)
+  if (split > 0){
+    if ( str.charAt(split - 1) === "v" ){ split -= 1 }
+    str = str.substring(0, split)
+  }
+  // #todo prevent taking the forge out of words like reforged
+  let regs = [/\W|_/ig, /forge/ig]
+  regs.forEach(a => str = str.replace(a, ''))
+  return str.toLowerCase()
+}
+
+function guessVersion(str) {
+  let split = str.search(/[0-9]/)
+  str = str.substring(split, str.length - 4)
+  let regs = [/1\.18\.1/, /1\.18/, /forge/i, /^[-_\s~(v)\.]+/i,/[-_\s~\.)]+$/]
+  regs.forEach(a => str = str.replace(a, ''))
+  return str
+}
+
 function getAddonObject(mod) {
   let fileName = mod.installedFile.fileName
-  let endName = fileName.search(/[0-9]/)
-  let startVersion = endName
-
-  // detect version prefix
-  if ( fileName.charAt(endName - 1) === "v" ){
-    endName -= 1
-  }
-
-  let namespaceGuess = fileName.substring(0, endName)
-  let versionGuess = fileName.substring(startVersion, fileName.length - 4)
-
-  // clean up the namespace guesses
-  let cleanForgeRemove = /forge/ig
-  namespaceGuess = namespaceGuess.replace(/\W|_/ig, '').replace(cleanForgeRemove, '').toLowerCase()
-  // todo prevent taking the forge out of words like reforged
-
-  // clean up the version numbers
-  let regs = [/1\.18\.1/, /1\.18/, /forge/i, /^[-_\s~(v)\.]+/i,/[-_\s~\.)]+$/]
-  regs.forEach(a => versionGuess = versionGuess.replace(a, ''))
-
   let modData = {
-    "ID": mod.addonID,
-    "Filename": fileName,
-    "Release Date":   simpleDate(mod.installedFile.fileDate),
-    "Date Installed": simpleDate(mod.dateInstalled),
-    "Last Updated":   simpleDate(mod.dateUpdated),
-    "Namespace Guess": namespaceGuess,
-    "Version": versionGuess,
-    "Dependency IDs": mod.latestFile.dependencies.map(a => a.addonId)
+    "ID":              mod.addonID,
+    "Filename":        fileName,
+    "Release Date":    simpleDate(mod.installedFile.fileDate),
+    "Date Installed":  simpleDate(mod.dateInstalled),
+    "Last Updated":    simpleDate(mod.dateUpdated),
+    "_namespace_guess": guessNamespace(fileName),
+    "Version":         guessVersion(fileName),
+    "Dependency IDs":  mod.latestFile.dependencies.map(a => a.addonId)
   }
   return modData
 }
 
 function getInstanceDetails(instanceObj) {
   return { 
-      pack_name: instanceObj.name,
-      forge_version: instanceObj.baseModLoader.forgeVersion,
-      game_version: instanceObj.gameVersion,
-      mod_list: instanceObj.installedAddons.map(getAddonObject) 
+      Name: instanceObj.name,
+      "Forge Version": instanceObj.baseModLoader.forgeVersion,
+      "Minecraft Version": instanceObj.gameVersion,
+      _mod_list: instanceObj.installedAddons.map(getAddonObject) 
     }
 }
+
+function getBongoData(bongoObj, type) {
+  // try with Computed property names (ES2015)
+  /*
+  let prop = 'foo';
+  let o = {
+    [prop]: 'hey',
+    ['b' + 'ar']: 'there'
+  }
+  */
+  let obj = {}
+  obj[type] = bongoObj.tasks
+  return obj
+}
+

@@ -11,30 +11,46 @@ async function gatherData(fresh = false) {
   let dataObj = {}
   let dataSources = [
     {
-      key: 'featured_sheet',
+      key: '_featured_sheet',
       url: sheetsURL + '?loc=' + 'featuring',
       parse: getFeaturedDetails,
-      perishable: false
+      always_fetch: false
     },{
-      key: 'instance_file',
+      key: '_instance_file',
       url: gitHubURL + 'minecraftinstance.json',
       parse: getInstanceDetails,
-      perishable: true
+      always_fetch: false
     }
   ]
+  let bongoTypes = ['advancement','item','entity']
+  bongoTypes.forEach(type => {
+    dataSources.push({
+      key: `_${type}_list`,
+      url: `${gitHubURL}/bongo-dump/bingo_tasks/bongo-${type}.json`,
+      parse: getBongoData,
+      always_fetch: false
+    })
+  })
 
   // check what keys localForage has saved (later maybe avoid if fresh is set?)
-  let localTest = await localforage.keys().then(function(keys) {
-      log(`Saved locally: ${keys}`)
+  let localTest = await localforage.keys().then(keys => {
+    if (fresh) {
+      log(`Loading fresh data, clearing local keys: ${keys.join(", ")}`)
+      keys.forEach(a => { localforage.removeItem(a) })
+      return {}
+    } else {
+      log(`Saved locally: ${keys.join(", ")}`)
       return Object.fromEntries(keys.map(key => [key, true]))
+    }
   }).catch(log)
 
-  function stored(key) { return localTest.hasOwnProperty(key) && !fresh }
+
+  function stored(key) { return localTest.hasOwnProperty(key) }
   function store(key, obj) { localforage.setItem(key, obj).catch(log) }
 
   // todo check that data is getting loaded properly
   function load(source) {
-    if (!source.perishable && stored(source.key)) {
+    if (!fresh && !source.always_fetch && stored(source.key)) {
 
       // load from localforage
       log(`loading ${source.key} data from local storage`)
@@ -48,15 +64,14 @@ async function gatherData(fresh = false) {
 
       // fetch and then store
       log(`fetching ${source.key} data from source`)
-      log(source.url)
       return fetch(source.url, { credentials: "omit" })
         .then((response) => response.json())
         .then((data) => {
           if (typeof source.parse === 'function') {
-            log(`running ${source.key} parse function`)
-            data = source.parse(data)
+            //log(`running ${source.key} parse function`)
+            data = source.parse(data, source.key)
           }
-          log(`${source.key} data aquired`)
+          //log(`${source.key} data aquired`)
           dataObj[source.key] = data
           store(source.key, data)
           return data
