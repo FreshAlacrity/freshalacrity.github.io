@@ -1,17 +1,24 @@
-function merge(rawData) {
+function byKey(arrayOfObj, key) {
+  let newObj = {}
+  arrayOfObj.forEach(entry => {
+    if (newObj.hasOwnProperty([entry[key]])){
+      log(`Key colision: ${key} for ${JSON.stringify(entry)} already taken`)
+    }
+    newObj[entry[key]] = entry
+  })
+  return newObj
+}
+
+function merge(allData) {
   // goal: merge mod_list and featured_list into included_list
 
-
   // make a dictionary of pending file info by namespace guess
-  let fileInfoDict = {}
-  rawData._mod_list.forEach(entry => {
-    fileInfoDict[entry._namespace_guess] = entry
-  })
+  let fileInfoDict = byKey(allData._mod_list, '_namespace_guess')
 
-  // #todo special handling for Forge entry
-  // #later loop through the files instead, it's a shorter list
-  let activeEntries = rawData._possible_addon_list.map(entry => {
-    if (!entry.Datapack) {
+  // combine  instance file data and spreadsheet data
+  allData._possible_addon_list = allData._possible_addon_list.map(entry => {
+    if (!entry.Datapack && entry.Status !== 'Base') {
+
       // find the simplest version of the namespace to check for
       let minName = entry.Filename ?? entry.Namespace
       minName = minName ?? entry["Mod/Datapack Name"]
@@ -22,9 +29,13 @@ function merge(rawData) {
         entry._namespace_guess = minName
       }
 
+      // make sure every entry has a namespace set
+      entry.Namespace = entry.Namespace ?? minName
+
+      // if a match is found, merge in the data
       if (fileInfoDict.hasOwnProperty(minName)) {
-        // merge the data and remove the key from the list of files to identify
         let newEntry = Object.assign(entry, fileInfoDict[minName])
+        // remove the key from the list of files to identify
         delete fileInfoDict[minName]
         newEntry.Status = "Included"
         return newEntry
@@ -37,9 +48,35 @@ function merge(rawData) {
     }
     return entry
   })
+  
+  // list any files that couldn't find associated entries
+  allData._to_identify = fileInfoDict
+  log(`Files that couldn't be located in the sheet data: ${JSON.stringify(allData._to_identify)}`)
 
-  rawData.Featured = activeEntries.filter(a => (a.Status === "Included"))
-  rawData['_to_identify'] = fileInfoDict
+  // make a dictionary of entries by namespace
+  let byNamespace = byKey(allData._possible_addon_list, 'Namespace')
+
+  // associate each item with the mod that it comes from
+  allData._item_list.forEach(entry => {
+    let namespace = entry.id.split(':')[0]
+    if (byNamespace.hasOwnProperty(namespace)) {
+      if (!byNamespace[namespace].adds) {
+        byNamespace[namespace].adds = {}
+      }
+      if (!byNamespace[namespace].adds.Items) {
+        byNamespace[namespace].adds.Items = {}
+      }
+      // #later decide how to handle multiple items with the same ID
+      byNamespace[namespace].adds.Items[entry.id] = { id: entry.id }
+    } else {
+      log(`Mod found with the same namespace as ${entry.id}`)
+    }
+
+  })
+
+
+  allData.Featured = allData._possible_addon_list.filter(a => (a.Status === "Included"))
+  
   // make a dictionary of entries by ID to identify + fill in dependency descriptions (supports x etc)
-  return rawData
+  return allData
 }

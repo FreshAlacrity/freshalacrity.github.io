@@ -44,7 +44,11 @@ function display(data) {
         
         featured += `<ul>`
         entryData.forEach(a => {
-          featured += `<li>${a.Name} (${a.Namespace} - ${a.ID})</li>`
+          let detail = ''
+          if (a.adds) {
+            detail = `(${Object.keys(a.adds.Items)})`
+          }
+          featured += `<li>${a.Name} ${detail}</li>`
         })
         featured += `</ul>`
         
