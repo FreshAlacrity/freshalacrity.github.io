@@ -14,13 +14,13 @@ async function gatherData(fresh = false) {
       key: '_possible_addon_list',
       url: sheetsURL + '?loc=' + 'Featuring',
       parse: getSheetData,
-      always_fetch: true
+      always_fetch: false
     },
     {
       key: '_item_list',
       url: sheetsURL + '?loc=' + 'Items',
       parse: getSheetData,
-      always_fetch: true
+      always_fetch: false
     },
     {
       key: '_instance_file',
@@ -29,13 +29,12 @@ async function gatherData(fresh = false) {
       always_fetch: false
     }
   ]
-  let bongoTypes = ['advancement','item','entity']
   bongoTypes.forEach(type => {
     dataSources.push({
-      key: `_featured_${type}_list`,
-      url: `${gitHubURL}/bongo-dump/bingo_tasks/bongo-${type}.json`,
+      key: `_featured_${type.toLowerCase()}_list`,
+      url: `${gitHubURL}/bongo-dump/bingo_tasks/bongo-${type.toLowerCase()}.json`,
       parse: getBongoData,
-      always_fetch: false
+      always_fetch: true
     })
   })
 

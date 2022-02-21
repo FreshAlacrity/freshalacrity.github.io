@@ -9,15 +9,12 @@ function byKey(arrayOfObj, key) {
   return newObj
 }
 
-function merge(allData) {
-  // goal: merge mod_list and featured_list into included_list
-
+function matchFileDataToSheetData(sheet, files) {
   // make a dictionary of pending file info by namespace guess
-  let fileInfoDict = byKey(allData._mod_list, '_namespace_guess')
+  let fileInfoDict = byKey(files, '_namespace_guess')
 
   // combine  instance file data and spreadsheet data
-  // #todo put this in its own function
-  allData._possible_addon_list = allData._possible_addon_list.map(entry => {
+  function matchEntry(entry) {
     if (!entry.Datapack && entry.Status !== 'Base') {
 
       // find the simplest version of the namespace to check for
@@ -36,51 +33,72 @@ function merge(allData) {
       // if a match is found, merge in the data
       if (fileInfoDict.hasOwnProperty(minName)) {
         let newEntry = Object.assign(entry, fileInfoDict[minName])
-        // remove the key from the list of files to identify
         delete fileInfoDict[minName]
         newEntry.Status = "Included"
         return newEntry
       }
-      
+        
       // it's not a datapack and it should be in the files
       if (entry.Status === "Included") { entry.Status = "NOT FOUND" }
+
     } else {
       //log(`Found datapack: ${entry["Mod/Datapack Name"]}`)
     }
     return entry
-  })
-  
-  // list any files that couldn't find associated entries
-  allData._to_identify = fileInfoDict
-  if (JSON.stringify(allData._to_identify) != "{}") {
-    log(`Files that couldn't be located in the sheet data: ${JSON.stringify(allData._to_identify)}`)
   }
+  sheet = sheet.map(matchEntry)
+
+  // list any files that couldn't find associated entries
+  if (JSON.stringify(fileInfoDict) != "{}") {
+    log(`Files that couldn't be located in the sheet data: ${JSON.stringify(fileInfoDict)}`)
+  }
+  return sheet
+}
+
+
+
+
+function merge(allData) {
+  let mList = allData._possible_addon_list
+
+  // merge file information into Featured sheet entries
+  mList = matchFileDataToSheetData(mList, allData._mod_list)
+
+  // make sure each entry has all the correct properties
+  mList = mList.map(entry => {
+    let template = { Adds: {} }
+    bongoTypes.forEach(a => { template.Adds[a] = [] })
+    return Object.assign(template, entry)
+  })
 
   // make a dictionary of entries by namespace
-  let byNamespace = byKey(allData._possible_addon_list, 'Namespace')
+  let byNamespace = byKey(mList, 'Namespace')
 
-  // associate each item with the mod that it comes from
-  allData._featured_item_list.forEach(entry => {
-    let namespace = entry.id.split(':')[0]
-    if (byNamespace.hasOwnProperty(namespace)) {
-      // transfer mod's included etc. status to item dataset also
-      if (!byNamespace[namespace].adds) {
-        byNamespace[namespace].adds = {}
+  // associate each item etc. with the mod that it comes from by id
+  // #todo put this in a function
+  let unknownNamespaces = {}
+  bongoTypes.forEach(type => {
+    log (`_featured_${type.toLowerCase()}_list`)
+    allData[`_featured_${type.toLowerCase()}_list`].forEach(entry => {
+      let id = entry.id ?? entry[type.toLowerCase()]      
+      let namespace = id.split(':')[0]
+      if (byNamespace.hasOwnProperty(namespace)) {
+        // #todo transfer mod's included etc. status to item dataset also
+        // #later decide how to handle multiple items with the same ID
+        byNamespace[namespace].Adds[type][id] = { id: id }
+      } else {
+        unknownNamespaces[namespace] = true
       }
-      if (!byNamespace[namespace].adds.Items) {
-        byNamespace[namespace].adds.Items = {}
-      }
-      // #later decide how to handle multiple items with the same ID
-      byNamespace[namespace].adds.Items[entry.id] = { id: entry.id }
-    } else {
-      log(`Mod found with the same namespace as ${entry.id}`)
-    }
-
+    })
   })
+  if (Object.keys(unknownNamespaces).length > 0) {
+    log(`Namespaces not found: ${Object.keys(unknownNamespaces).join(', ')}`)
+  }
 
+  // #later here - merge bongo item data into sheet data
+  // make sure each item in the bongo list has an entry
 
-  allData.Featured = allData._possible_addon_list.filter(a => (a.Status === "Included"))
-  
-  // make a dictionary of entries by ID to identify + fill in dependency descriptions (supports x etc)
+  // filter out the addons present in this version
+  allData.Featured = mList.filter(a => (a.Status === "Included"))
   return allData
 }
