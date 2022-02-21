@@ -12,6 +12,7 @@
 // tag for open source
 // stretch goal: include config file locations
 // stretch goal: pull in issues and append related issues to the appropriate mod listings
+// stretch goal: some way to update the exported data when the spreadsheet changes
 
 var reloadAllData = false
 

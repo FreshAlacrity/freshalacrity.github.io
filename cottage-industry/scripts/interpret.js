@@ -28,8 +28,10 @@ function tableToJSON(tableData) {
   return arr
 }
 
-function getFeaturedDetails(sheetData) {
-  return { _possible_addon_list: tableToJSON(sheetData) }
+function getSheetData(sheetData, key) {
+  let newObj = {}
+  newObj[key] = tableToJSON(sheetData)
+  return newObj
 }
 
 // convert JSON from the instance.json file into something more handy

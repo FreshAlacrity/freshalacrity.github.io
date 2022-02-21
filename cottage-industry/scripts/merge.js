@@ -16,6 +16,7 @@ function merge(allData) {
   let fileInfoDict = byKey(allData._mod_list, '_namespace_guess')
 
   // combine  instance file data and spreadsheet data
+  // #todo put this in its own function
   allData._possible_addon_list = allData._possible_addon_list.map(entry => {
     if (!entry.Datapack && entry.Status !== 'Base') {
 
@@ -51,15 +52,18 @@ function merge(allData) {
   
   // list any files that couldn't find associated entries
   allData._to_identify = fileInfoDict
-  log(`Files that couldn't be located in the sheet data: ${JSON.stringify(allData._to_identify)}`)
+  if (JSON.stringify(allData._to_identify) != "{}") {
+    log(`Files that couldn't be located in the sheet data: ${JSON.stringify(allData._to_identify)}`)
+  }
 
   // make a dictionary of entries by namespace
   let byNamespace = byKey(allData._possible_addon_list, 'Namespace')
 
   // associate each item with the mod that it comes from
-  allData._item_list.forEach(entry => {
+  allData._featured_item_list.forEach(entry => {
     let namespace = entry.id.split(':')[0]
     if (byNamespace.hasOwnProperty(namespace)) {
+      // transfer mod's included etc. status to item dataset also
       if (!byNamespace[namespace].adds) {
         byNamespace[namespace].adds = {}
       }

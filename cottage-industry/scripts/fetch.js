@@ -11,11 +11,18 @@ async function gatherData(fresh = false) {
   let dataObj = {}
   let dataSources = [
     {
-      key: '_featured_sheet',
-      url: sheetsURL + '?loc=' + 'featuring',
-      parse: getFeaturedDetails,
-      always_fetch: false
-    },{
+      key: '_possible_addon_list',
+      url: sheetsURL + '?loc=' + 'Featuring',
+      parse: getSheetData,
+      always_fetch: true
+    },
+    {
+      key: '_item_list',
+      url: sheetsURL + '?loc=' + 'Items',
+      parse: getSheetData,
+      always_fetch: true
+    },
+    {
       key: '_instance_file',
       url: gitHubURL + 'minecraftinstance.json',
       parse: getInstanceDetails,
@@ -25,7 +32,7 @@ async function gatherData(fresh = false) {
   let bongoTypes = ['advancement','item','entity']
   bongoTypes.forEach(type => {
     dataSources.push({
-      key: `_${type}_list`,
+      key: `_featured_${type}_list`,
       url: `${gitHubURL}/bongo-dump/bingo_tasks/bongo-${type}.json`,
       parse: getBongoData,
       always_fetch: false
