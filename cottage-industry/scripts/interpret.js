@@ -89,16 +89,6 @@ function getInstanceDetails(instanceObj) {
 }
 
 function getBongoData(bongoObj, type) {
-  // try with Computed property names (ES2015)
-  /*
-  let prop = 'foo';
-  let o = {
-    [prop]: 'hey',
-    ['b' + 'ar']: 'there'
-  }
-  */
-  let obj = {}
-  obj[type] = bongoObj.tasks
-  return obj
+  return { [type]: bongoObj.tasks }
 }
 

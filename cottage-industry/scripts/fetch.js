@@ -34,7 +34,7 @@ async function gatherData(fresh = false) {
       key: `_featured_${type.toLowerCase()}_list`,
       url: `${gitHubURL}/bongo-dump/bingo_tasks/bongo-${type.toLowerCase()}.json`,
       parse: getBongoData,
-      always_fetch: true
+      always_fetch: false
     })
   })
 
@@ -45,7 +45,7 @@ async function gatherData(fresh = false) {
       keys.forEach(a => { localforage.removeItem(a) })
       return {}
     } else {
-      log(`Saved locally: ${keys.join(", ")}`)
+      //log(`Saved locally: ${keys.join(", ")}`)
       return Object.fromEntries(keys.map(key => [key, true]))
     }
   }).catch(log)
@@ -59,17 +59,17 @@ async function gatherData(fresh = false) {
     if (!fresh && !source.always_fetch && stored(source.key)) {
 
       // load from localforage
-      log(`loading ${source.key} data from local storage`)
+      //log(`loading ${source.key} data from local storage`)
       return localforage.getItem(source.key).then(data => {
         dataObj[source.key] = data
-        log(`${source.key} data loaded`)
+        log(`${source.key} data loaded from local storage`)
         return data
       }).catch(log)
 
     } else {
 
       // fetch and then store
-      log(`fetching ${source.key} data from source`)
+      //log(`fetching ${source.key} data from source`)
       return fetch(source.url, { credentials: "omit" })
         .then((response) => response.json())
         .then((data) => {
@@ -77,7 +77,7 @@ async function gatherData(fresh = false) {
             //log(`running ${source.key} parse function`)
             data = source.parse(data, source.key)
           }
-          //log(`${source.key} data aquired`)
+          log(`${source.key} data fetched from source`)
           dataObj[source.key] = data
           store(source.key, data)
           return data

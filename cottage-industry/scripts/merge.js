@@ -78,7 +78,6 @@ function merge(allData) {
   // #todo put this in a function
   let unknownNamespaces = {}
   bongoTypes.forEach(type => {
-    log (`_featured_${type.toLowerCase()}_list`)
     allData[`_featured_${type.toLowerCase()}_list`].forEach(entry => {
       let id = entry.id ?? entry[type.toLowerCase()]      
       let namespace = id.split(':')[0]
