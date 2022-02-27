@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Toki Pona Lowen Isun (Lorem Ipsum)</title>
+  <link rel="apple-touch-icon" sizes="180x180" href="../../apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../../favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../../favicon-16x16.png">
+  <link rel="manifest" href="./../site.webmanifest">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Code+Pro">
+  <link id="page_style" rel="stylesheet" type="text/css" href="../../misc/sitelen_telo.css">
+  <link id="page_style" rel="stylesheet" type="text/css" href="./style.css">
+  <script src="toki-ipsum.js"></script>
+</head>
+
+<body>
+  <span id="test"></span>
+  <span id="telo-test" style='font:1.5em "Sitelen Telo";'></span>
+  <span><button title="generate new Lowen Isun" onclick="generate()">kin</button> 
+  <br><br>tan <a href="./toki-ipsum.js">toki-ipsum.js</a></span>
+  <script>
+    function generate() {
+      let text = tokiIpsum()
+      document.getElementById('test').innerHTML = text
+      document.getElementById('telo-test').innerHTML = text
+    }
+    generate()
+  </script>
+</body>
+
+</html>
