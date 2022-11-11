@@ -1,3 +1,6 @@
 [submodule "front"]
 	path = front
 	url = https://github.com/FreshAlacrity/front-tracker
+[submodule "timer"]
+	path = timer
+	url = https://github.com/FreshAlacrity/timer
