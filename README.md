@@ -10,3 +10,9 @@ If the folder had already been part of the repository, delete it and do this fro
 git rm -r --cached foldername
 git submodule add https://github.com/FreshAlacrity/timer foldername
 ```
+
+## Updating Submodules
+```
+git submodule update –-remote
+```
+Seems to be working? Will need to double check - if anyone else is having no visible output from git commands in Git Bash when there's no error, please let me know; even `git submodule status` has no output
