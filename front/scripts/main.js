@@ -8,7 +8,7 @@ var data = {
     toggles: {
       available:   { action: updateOnToggle, default: true },
       unavailable: { action: updateOnToggle },
-      live:        { action: toggleLive, default: false }, // #todo revert this to true for
+      live:        { action: toggleLive, default: true }, // #todo revert this to true for
       editing:     { action: toggleEditing  }
     }
   },
