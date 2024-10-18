@@ -12,7 +12,23 @@ git submodule add https://github.com/FreshAlacrity/timer submodule_dir
 ```
 
 ## Updating Submodules
+via https://stackoverflow.com/a/5828396 with some updates and annotation
 ```
-git submodule update –-remote
+# Change to the submodule directory
+cd submodule_dir
+
+# Checkout desired branch (not neccessary if it's already on the desired branch)
+git checkout main
+
+# Update
+git pull
+
+# Get back to your project root
+cd ..
+
+# Now the submodules are in the state you want, so
+git commit -am "Pulled down update to submodule_dir"
+
+Or, if you're a busy person:
+git submodule foreach git pull origin main
 ```
-Seems to be working? Will need to double check - if anyone else is having no visible output from git commands in Git Bash when there's no error, please let me know; even `git submodule status` has no output
