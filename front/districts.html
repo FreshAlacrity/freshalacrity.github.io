@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Districts</title>
+  <style>
+    @media (prefers-color-scheme: dark) {
+    }
+    @import url(@import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,200..800;1,200..800&display=swap');
+    
+    body {
+      /* @todo figure out why font import isn't working */
+      font-family: "Atkinson Hyperlegible Next", "Atkinson Hyperlegible", "Open Sans", Roboto, Helvetica, sans-serif;
+      font-optical-sizing: auto;
+      font-style: normal;
+      font-weight: 400;
+      background-color: Canvas;
+      color: CanvasText;
+      color-scheme: light dark;
+      font-size: 100%;
+    }
+    table, th, td {
+      border: 1px solid #80808040;
+      border-collapse: collapse;
+    }
+    .nickname {
+      width: 1.2em;
+      writing-mode: tb-rl;
+      transform: rotate(180deg);
+      padding: 0.1em;
+      font-size: 70%;
+      vertical-align: middle;
+    }
+    .district-num {
+      vertical-align: top;
+      padding: 0.3em 0 0.3em 0.3em;
+    }
+    .district-icon {
+      width: 4em; 
+      height: 4em;
+      white-space: nowrap;
+      vertical-align: middle;
+      padding: 0.3em 0.3em 0.3em 0;
+    }
+    .district, .cs {
+      text-align: center;
+    }
+    .district {
+      padding: 0em;
+    }
+    .cs, .name, .values {
+      padding: 0.3em;
+    }
+    .values {
+      width: 16em;
+    }
+    .header {
+      color: grey;
+    }
+    .header > td {
+      padding: 0.3em 0.3em 0em 0.3em;
+    }
+  </style> 
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<p class="c10 c6"><span class="c5">
+<table class="c14">
+  <tr class="header">
+    <td class="nickname"></td>
+    <td class="district">District</td>
+    <td class="cs name" colspan="2" rowspan="1">Takes After</td>
+    <td class="values">Values</td>
+  </tr>
+  <tr>
+    <td class="nickname" rowspan="2">SEEKERS</td>
+    <!--<td class="c11" colspan="1" rowspan="2" style="background-color:#00bcd4"></td>-->
+    <td class="district" colspan="1" rowspan="2">
+      <span class="district-num">1</span>
+      <img class="district-icon" alt="" src="https://freshalacrity.github.io/front/images/d1.png" title="">
+    </td>
+    <td class="cs" colspan="1" rowspan="1">
+      M&#8321;
+    </td>
+    <td class="name" colspan="1" rowspan="1">
+      Moth
+    </td>
+    <td class="values" colspan="1" rowspan="1">
+      transcendence, unity, compassion
+    </td>
+  </tr>
+  <tr>
+    <td class="cs" colspan="1" rowspan="1">
+      S&#8321;
+    </td>
+    <td class="name" colspan="1" rowspan="1">
+      Simone
+    </td>
+    <td class="values" colspan="1" rowspan="1">
+      transformation, becoming whole
+    </td>
+  </tr>
+  <tr>
+    <td class="nickname">HEALERS</td>
+    <td class="district">
+      <span class="district-num">2</span>
+      <img alt="" class="district-icon" src="https://freshalacrity.github.io/front/images/d2.png" title="">
+    </td>
+    <td class="cs" colspan="1" rowspan="1">
+      C&#8322;
+    </td>
+    <td class="name" colspan="1" rowspan="1">
+      Clover
+    </td>
+    <td class="values" colspan="1" rowspan="1">
+      intimacy, compassion, offering comfort and aid
+    </td>
+  </tr>
+  <tr>
+    <td class="nickname" rowspan="2">STEWARDS</td>
+    <td class="district" colspan="1" rowspan="2">
+      <span class="district-num">3</span>
+      <img class="district-icon" alt="" src="https://freshalacrity.github.io/front/images/d3.png" title="">
+    </td>
+    <td class="cs" colspan="1" rowspan="1">
+      T&#8323;
+    </td>
+    <td class="name" colspan="1" rowspan="1">
+      Tiff
+    </td>
+    <td class="values" colspan="1" rowspan="1">
+      organizing objects, access
+    </td>
+  </tr>
+  <tr class="c30">
+    <td class="cs" colspan="1" rowspan="1">
+      V&#8323;
+    </td>
+    <td class="name" colspan="1" rowspan="1">
+      Val
+    </td>
+    <td class="values" colspan="1" rowspan="1">
+      analytics, resources, priorities
+    </td>
+  </tr>
+  <tr>
+    <td class="nickname" rowspan="2">ENGINEERS</td>
+    <td class="district" colspan="1" rowspan="2">
+      <span class="district-num">4</span>
+      <img class="district-icon" alt="" src="https://freshalacrity.github.io/front/images/d4.png" title="">
+    </td>
+    <td class="cs" colspan="1" rowspan="1">
+      K&#8324;
+    </td>
+    <td class="name" colspan="1" rowspan="1">
+      Clark
+    </td>
+    <td class="values" colspan="1" rowspan="1">
+      the logic of how things work
+    </td>
+  </tr>
+  <tr>
+    <td class="cs" colspan="1" rowspan="1">
+      W&#8324;
+    </td>
+    <td class="name" colspan="1" rowspan="1">
+      Wolf
+    </td>
+    <td class="values" colspan="1" rowspan="1">
+      integrity, principles, justice
+    </td>
+  </tr>
+  <tr>
+    <td class="nickname">SENSATES</td>
+    <td class="district" colspan="1" rowspan="1">
+      <span class="district-num">5</span>
+      <img class="district-icon" alt="" src="https://freshalacrity.github.io/front/images/d5.png" title="">
+    </td>
+    <td class="cs" colspan="1" rowspan="1">
+      F&#8325;
+    </td>
+    <td class="name" colspan="1" rowspan="1">
+      Faun 
+    </td>
+    <td class="values" colspan="1" rowspan="1">
+      physical senses and needs, strong kinesthetic abilities
+    </td>
+  </tr>
+  <tr>
+    <td class="nickname" rowspan="2">DIPLOMATS</td>
+    <td class="district" colspan="1" rowspan="2">
+      <span class="district-num">6</span>
+      <img class="district-icon" alt="" src="https://freshalacrity.github.io/front/images/d6.png" title="">
+    </td>
+    <td class="cs" colspan="1" rowspan="1">
+      A&#8326;
+    </td>
+    <td class="name" colspan="1" rowspan="1">
+      Anne
+    </td>
+    <td class="values" colspan="1" rowspan="1">
+      strategy, social dynamics
+    </td>
+  </tr>
+  <tr>
+    <td class="cs" colspan="1" rowspan="1">
+      E&#8326;
+    </td>
+    <td class="name" colspan="1" rowspan="1">
+      Eve
+    </td>
+    <td class="values" colspan="1" rowspan="1">
+      close personal relationships
+    </td>
+  </tr>
+  <tr>
+    <td class="nickname">REBELS</td>
+    <td class="district" colspan="1" rowspan="1">
+      <span class="district-num">7</span>
+      <img class="district-icon" alt="" src="https://freshalacrity.github.io/front/images/d7.png" title="">
+    </td>
+    <td class="cs" colspan="1" rowspan="1">
+      Y&#8327;
+    </td>
+    <td class="name" colspan="1" rowspan="1">
+      Lucky
+    </td>
+    <td class="values" colspan="1" rowspan="1">
+      freedom, flexibility, experimentation, spontaneity
+    </td>
+  </tr>
+  <tr>
+    <td class="nickname">ARCHIVISTS</td>
+    <td class="district">
+      <span class="district-num">8</span>
+      <img class="district-icon" alt="" src="https://freshalacrity.github.io/front/images/d8.png" title="">
+    </td>
+    <td class="cs" colspan="1" rowspan="1">
+      G&#8328;
+    </td>
+    <td class="name" colspan="1" rowspan="1">
+      Giles
+    </td>
+    <td class="values" colspan="1" rowspan="1">
+      documentation, organization of information
+    </td>
+  </tr>
+  <tr>
+    <td class="nickname" rowspan="2">WITCHES</td>
+    <td class="district" colspan="1" rowspan="2">
+      <span class="district-num">9</span>
+      <img class="district-icon" alt="" src="https://freshalacrity.github.io/front/images/d9.png" title="">
+    </td>
+    <td class="cs" colspan="1" rowspan="1">
+      H&#8329;
+    </td>
+    <td class="name" colspan="1" rowspan="1">
+      Thorn
+    </td>
+    <td class="values" colspan="1" rowspan="1">
+      mysteries, courage, deep unknown
+    </td>
+  </tr>
+  <tr>
+    <td class="cs" colspan="1" rowspan="1">
+      Z&#8329;
+    </td>
+    <td class="name" colspan="1" rowspan="1">
+      Starling
+    </td>
+    <td class="values" colspan="1" rowspan="1">
+      rest, intuition, self-preservation
+    </td>
+  </tr>
+</table>
+  <!-- @todo add links to Districts & Cohort groups -->
+<!-- partial -->
+  
+</body>
+</html>
